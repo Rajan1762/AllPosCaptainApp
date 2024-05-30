@@ -39,7 +39,7 @@ class _ListScreen extends State<ListScreen> {
               color: appThemeColor,
               borderRadius: const BorderRadius.all(Radius.circular(20))
             ),
-            child: const Center(child: Text('View Reservation',style: TextStyle(color: Colors.white),)),
+            child: const Center(child: Text('View Reservation',style: TextStyle(color: Colors.white,fontSize: 16),)),
           ),
           Expanded(child: ListView.builder(itemCount: 10,itemBuilder: (context,index){
             return Container(

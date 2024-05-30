@@ -1,11 +1,11 @@
 import 'package:captain_app/list_screen/list_screen.dart';
 import 'package:captain_app/order_screens/order_screen.dart';
-import 'package:captain_app/services/provider_sevices/bottom_provider.dart';
 import 'package:captain_app/setting/setting_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../order_screens/order_screen.dart';
+import '../services/provider_services/bottom_provider.dart';
 import '../utils/colors.dart';
 
 class HomeMainScreen extends StatefulWidget {

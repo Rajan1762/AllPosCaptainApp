@@ -1,3 +1,4 @@
+import 'package:captain_app/order_screens/new_order_screen.dart';
 import 'package:captain_app/utils/colors.dart';
 import 'package:flutter/material.dart';
 
@@ -53,16 +54,21 @@ class _OrderScreenState extends State<OrderScreen> {
                     });
                   }, dropDownList: orderTypeDropDownList!, titleBgColor: Colors.white,),
                 ),
-                SizedBox(width: 15),
+                const SizedBox(width: 15),
                 Expanded(
-                  child: Container(
-                    margin: EdgeInsets.only(top: 10),
-                    decoration: BoxDecoration(
-                        color: appThemeColor,
-                        borderRadius: const BorderRadius.all(Radius.circular(20)),
-                        border: const Border()
+                  child: GestureDetector(
+                    onTap: (){
+                      Navigator.of(context).push(MaterialPageRoute(builder: (context)=>const NewOrderScreen()));
+                    },
+                    child: Container(
+                      margin: const EdgeInsets.only(top: 10),
+                      decoration: BoxDecoration(
+                          color: appThemeColor,
+                          borderRadius: const BorderRadius.all(Radius.circular(20)),
+                          border: const Border()
+                      ),
+                      child: const Center(child: Text('NEW ORDER',style: TextStyle(fontSize: 16,fontWeight: FontWeight.w600,color: Colors.white))),
                     ),
-                    child: const Center(child: Text('NEW ORDER',style: TextStyle(fontSize: 16,fontWeight: FontWeight.w600,color: Colors.white))),
                   ),
                 )
               ],

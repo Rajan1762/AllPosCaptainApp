@@ -1,12 +1,46 @@
+import 'dart:io';
+
 import 'package:captain_app/home_screen/home_main_screen.dart';
 import 'package:captain_app/profile_screens/login_screen.dart';
-import 'package:captain_app/services/provider_sevices/bottom_provider.dart';
+import 'package:captain_app/services/provider_services/bottom_provider.dart';
+import 'package:captain_app/services/provider_services/product_provider_service.dart';
 import 'package:captain_app/utils/colors.dart';
+import 'package:captain_app/utils/constants.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-void main() {
-  runApp(const MyApp());
+class MyHttpOverrides extends HttpOverrides {
+  @override
+  HttpClient createHttpClient(SecurityContext? context) {
+    return super.createHttpClient(context)
+      ..badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
+  }
+}
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await _getSharedPrefValue();
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]).then((_) {
+    HttpOverrides.global = MyHttpOverrides();
+    runApp(const MyApp());
+  });
+}
+
+Future<void> _getSharedPrefValue() async {
+  final SharedPreferences prefs = await SharedPreferences.getInstance();
+  kOrganizationCodeVal = prefs.getString(kOrganizationCode) ?? "";
+  kEmployeeCodeVal = prefs.getString(kEmployeeCode) ?? "";
+  kEmployeeNameVal = prefs.getString(kEmployeeName) ?? "";
+  kIsCaptainVal = prefs.getString(kIsCaptain) ?? "";
+  kAuthTokenVal = prefs.getString(kAuthToken) ?? "";
+  kBranchCodeVal = prefs.getString(kBranchCodeString) ?? "";
+  kTillVal = prefs.getString(kTillString) ?? "";
 }
 
 class MyApp extends StatelessWidget {
@@ -16,70 +50,23 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (context)=>BottomProvider()),
+        ChangeNotifierProvider(create: (context) => BottomProvider()),
+        ChangeNotifierProvider(create: (context) => ProductProviderService()),
       ],
       child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: 'Flutter Demo',
-        theme: ThemeData(
-          appBarTheme: AppBarTheme(
-            backgroundColor: Colors.teal.shade800,
-            foregroundColor: Colors.white
+          debugShowCheckedModeBanner: false,
+          title: 'Flutter Demo',
+          theme: ThemeData(
+            appBarTheme: AppBarTheme(
+                backgroundColor: Colors.teal.shade800,
+                foregroundColor: Colors.white),
+            scaffoldBackgroundColor: scaffoldBgColor,
+            colorScheme: ColorScheme.fromSeed(seedColor: appThemeColor),
+            useMaterial3: true,
           ),
-          scaffoldBackgroundColor: scaffoldBgColor,
-          colorScheme: ColorScheme.fromSeed(seedColor: appThemeColor),
-          useMaterial3: true,
-        ),
-        home: const LoginScreen()
-      ),
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+          home: kEmployeeCodeVal == ''
+              ? const LoginScreen()
+              : const HomeMainScreen()),
     );
   }
 }
