@@ -9,9 +9,20 @@ class ProductProviderService extends ChangeNotifier{
   final List<ProductList> _cartList = [];
 
   List<ProductList> get cartList => _cartList;
+  int _overAllQuantity = 0;
 
-  addToCart(ProductList value,int index) {
-    _categoryMap[selectedCategoryType]?[index].quantity += 1;
+  int get overAllQuantity => _overAllQuantity;
+
+  calculateOverAllQuantity(){
+    _overAllQuantity = 0;
+    for (var element in _cartList) {
+      _overAllQuantity += element.quantity;
+    }
+    notifyListeners();
+  }
+
+  addToCart(ProductList value) {
+    // _categoryMap[selectedCategoryType]?[index].quantity += 1;
     if(!_cartList.contains(value))
       {
         _cartList.add(value);
@@ -24,10 +35,10 @@ class ProductProviderService extends ChangeNotifier{
             }
         }
     }
-    notifyListeners();
+    calculateOverAllQuantity();
   }
 
-  removeFromCart(ProductList value,int index) {
+  removeFromCart(ProductList value) {
     if(_cartList.contains(value))
       {
         for(int i = 0; i < _cartList.length; i++)
@@ -43,13 +54,14 @@ class ProductProviderService extends ChangeNotifier{
           }
         }
       }
-    if((_categoryMap[selectedCategoryType]?[index].quantity)! > 1)
-    {
-      _categoryMap[selectedCategoryType]?[index].quantity -= 1;
-      notifyListeners();
-    }else{
-      changeAddStatus(index);
-    }
+    calculateOverAllQuantity();
+    // if((_categoryMap[selectedCategoryType]?[index].quantity)! > 1)
+    // {
+    //   _categoryMap[selectedCategoryType]?[index].quantity -= 1;
+    //   notifyListeners();
+    // }else{
+    //   changeAddStatus(index);
+    // }
     //notifyListeners();
   }
 
