@@ -36,7 +36,7 @@ class _OrderScreenState extends State<OrderScreen> {
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            height: 90,
+            height: 80,
             // width: MediaQuery.of(context).size.width,
             margin: const EdgeInsets.all(10),
             padding: const EdgeInsets.all(10),
@@ -85,7 +85,7 @@ class _OrderScreenState extends State<OrderScreen> {
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 10.0),
                   child: SizedBox(
-                    height: 70,
+                    height: 60,
                     child: DropDownOuterContainer(title: 'Floor', dropDownValue: floorDropDownValue, onChanged: (s){
                       setState(() {
                         floorDropDownValue = s??'';
@@ -94,10 +94,10 @@ class _OrderScreenState extends State<OrderScreen> {
                   ),
                 ),
               ),
-              const SizedBox(width: 30,),
+              const SizedBox(width: 40,),
               Container(
                 margin: const EdgeInsets.symmetric(vertical: 20,horizontal: 10),
-                padding: const EdgeInsets.symmetric(vertical: 10,horizontal: 30),
+                padding: const EdgeInsets.symmetric(vertical: 10,horizontal: 25),
                 decoration: BoxDecoration(
                     color: scaffoldBgColor,
                     borderRadius: const BorderRadius.all(Radius.circular(20)),
@@ -106,7 +106,7 @@ class _OrderScreenState extends State<OrderScreen> {
                       BoxShadow(blurRadius: 2,color: Colors.grey)
                     ]
                 ),
-                child: Center(child: Text('Refresh',style: TextStyle(fontSize: 16,fontWeight: FontWeight.w600,color: appThemeColor))),
+                child: Center(child: Text('Refresh',style: TextStyle(color: appThemeColor))),
               )
             ],
           ),
@@ -146,15 +146,15 @@ class _OrderScreenState extends State<OrderScreen> {
                                     child: Center(child: Text('Order 1')),
                                   ),
                                 ),
-                                SizedBox(width: 20),
+                                const SizedBox(width: 20),
                                 Expanded(
                                   child: Column(
                                     children: [
-                                      Text('8/4'),
+                                      const Text('8/4'),
                                       Container(
                                         height: 10,
                                         // width: 50,
-                                        decoration: BoxDecoration(
+                                        decoration: const BoxDecoration(
                                             color: Colors.orange,
                                             borderRadius: BorderRadius.all(Radius.circular(5))
                                         ),

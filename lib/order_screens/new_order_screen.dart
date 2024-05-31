@@ -78,13 +78,18 @@ class _NewOrderScreenState extends State<NewOrderScreen> {
                               child: Row(
                                 // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                 children: [
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 10.0),
-                                    child: Icon(
-                                      Icons.arrow_circle_left_outlined,
-                                      color: appThemeColor,
-                                      size: 30,
+                                  GestureDetector(
+                                    onTap: (){
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 10.0),
+                                      child: Icon(
+                                        Icons.arrow_circle_left_outlined,
+                                        color: appThemeColor,
+                                        size: 30,
+                                      ),
                                     ),
                                   ),
                                   const VerticalDivider(),
