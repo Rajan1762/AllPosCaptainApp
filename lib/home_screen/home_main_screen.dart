@@ -1,12 +1,14 @@
-import 'package:captain_app/list_screen/list_screen.dart';
+import 'package:captain_app/list_screen/list_screen_old.dart';
 import 'package:captain_app/order_screens/order_screen.dart';
 import 'package:captain_app/setting/setting_screen.dart';
+import 'package:captain_app/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
-import '../order_screens/order_screen.dart';
+import '../list_screen/list_screen.dart';
+import '../services/network_services/home_screen_services.dart';
 import '../services/provider_services/bottom_provider.dart';
-import '../utils/colors.dart';
+import '../utils/common_values.dart';
+import '../utils/constants.dart';
 
 class HomeMainScreen extends StatefulWidget {
   const HomeMainScreen({super.key});
@@ -16,6 +18,26 @@ class HomeMainScreen extends StatefulWidget {
 }
 
 class _HomeMainScreenState extends State<HomeMainScreen> {
+  bool tillSelectedStatus = false;
+  // final List<SalesPriceModel> salesPriceModelList = [];
+
+  _getTillData(BuildContext context) async {
+    if (kTillVal == "") {
+      tillBaseModel = await getTillData();
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    _getTillData(context);
+    super.didChangeDependencies();
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(child:
@@ -43,7 +65,7 @@ class _HomeMainScreenState extends State<HomeMainScreen> {
             ),
           ],
           currentIndex: provider.bottomIndex,
-          selectedItemColor: Colors.orange,
+          selectedItemColor: appComboColor,
           showUnselectedLabels: true,
           unselectedItemColor: Colors.grey.shade600,
             onTap: (index) {

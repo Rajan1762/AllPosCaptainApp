@@ -54,6 +54,7 @@ class Data {
   String? enablePrintKOT;
   String? enableTenderExchange;
   String? activeStatus;
+  bool isSelected = false;
 
   Data(
       {this.branch,

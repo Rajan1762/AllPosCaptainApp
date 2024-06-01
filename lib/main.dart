@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:captain_app/home_screen/home_main_screen.dart';
 import 'package:captain_app/profile_screens/login_screen.dart';
 import 'package:captain_app/services/provider_services/bottom_provider.dart';
+import 'package:captain_app/services/provider_services/order_provider.dart';
 import 'package:captain_app/services/provider_services/product_provider_service.dart';
 import 'package:captain_app/utils/colors.dart';
 import 'package:captain_app/utils/constants.dart';
@@ -52,13 +53,14 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (context) => BottomProvider()),
         ChangeNotifierProvider(create: (context) => ProductProviderService()),
+        ChangeNotifierProvider(create: (context) => OrderProvider()),
       ],
       child: MaterialApp(
           debugShowCheckedModeBanner: false,
           title: 'Flutter Demo',
           theme: ThemeData(
             appBarTheme: AppBarTheme(
-                backgroundColor: Colors.teal.shade800,
+                backgroundColor: appThemeColor,
                 foregroundColor: Colors.white),
             scaffoldBackgroundColor: scaffoldBgColor,
             colorScheme: ColorScheme.fromSeed(seedColor: appThemeColor),

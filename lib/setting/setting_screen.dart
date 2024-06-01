@@ -1,4 +1,6 @@
+import 'package:captain_app/model/till_model.dart';
 import 'package:captain_app/utils/colors.dart';
+import 'package:captain_app/utils/common_values.dart';
 import 'package:captain_app/utils/constants.dart';
 import 'package:flutter/material.dart';
 
@@ -53,7 +55,14 @@ class _SettingScreenState extends State<SettingScreen> {
             ),
             const SettingFiledWidget(leadingIcon: Icons.print_outlined, title: 'KOT Printers'),
             const SettingFiledWidget(leadingIcon: Icons.print_outlined, title: 'Waiter Printer'),
-            SettingFiledWidget(leadingIcon: Icons.countertops_outlined, title: 'Till',trailingWidget: Text('T03-CR2-Android',style: TextStyle(color: Colors.grey.shade600,fontSize: 14))),
+            SettingFiledWidget(leadingIcon: Icons.countertops_outlined, title: 'Till',trailingWidget: Text('T03-CR2-Android',style: TextStyle(color: Colors.grey.shade600,fontSize: 14)),
+            onTap: (){
+              print('kTillVal = $kTillVal');
+              if(tillBaseModel!=null)
+                {
+                  tillAlertDialog(context: context);
+                }
+            }),
             const SettingFiledWidget(leadingIcon: Icons.sync, title: 'Sync masters'),
             SettingFiledWidget(leadingIcon: Icons.pin_end, title: 'Show prices',trailingWidget: Switch(
                 activeColor: Colors.orange,
@@ -90,14 +99,167 @@ class _SettingScreenState extends State<SettingScreen> {
       ),
     );
   }
+
+  Future<dynamic> tillAlertDialog({required BuildContext context}) {
+    return showDialog(context: context, builder: (BuildContext context){
+                  return Dialog(
+                    insetPadding: const EdgeInsets.all(0),
+                    shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(5))),
+                    child: SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.7,
+                      width: MediaQuery.of(context).size.width * 0.8,
+                      child: const TillAlertDialogStatefulWidget(),
+                    ),
+                  );
+                });
+  }
 }
+
+class TillAlertDialogStatefulWidget extends StatefulWidget {
+  const TillAlertDialogStatefulWidget({super.key});
+
+  @override
+  State<TillAlertDialogStatefulWidget> createState() => _TillAlertDialogStatefulWidgetState();
+}
+
+class _TillAlertDialogStatefulWidgetState extends State<TillAlertDialogStatefulWidget> {
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(20,10,5,20),
+          child: Text('Select Till',style: TextStyle(color: Colors.grey.shade800,fontWeight: FontWeight.w600,fontSize: 18),),
+        ),
+        Divider(),
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            child: ListView.builder(
+                shrinkWrap: true,
+                itemCount: tillBaseModel?.data?.length
+                ,itemBuilder: (context,index){
+              return InkWell(
+                splashColor: appThemeColor,
+                onTap: (){
+                  print('tillBaseModel?.data?[index].isSelected = ${tillBaseModel?.data?[index].isSelected}');
+                  kTillVal = tillBaseModel?.data?[index].tillCode ?? '';
+                  for(int i = 0;i<tillBaseModel!.data!.length;i++)
+                  {
+                    if(i == index)
+                    {
+                      tillBaseModel?.data?[i].isSelected = true;
+                    }else{
+                      tillBaseModel?.data?[i].isSelected = false;
+                    }
+                  }
+                  setState(() {
+                    print('After isSelected = ${tillBaseModel?.data?[index].isSelected}');
+                  });
+                },
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 10.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('${tillBaseModel?.data?[index].tillName}',style: TextStyle(color: Colors.grey.shade600),),
+                      Visibility(
+                          visible: tillBaseModel?.data![index].isSelected ?? false,
+                          child: Icon(Icons.check_circle_rounded,color: Colors.grey.shade600))
+                    ],
+                  ),
+                ),
+              );
+            }),
+          ),
+        ),
+        Divider(),
+        Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Text('CANCEL',style: TextStyle(color: appThemeColor,fontSize: 18,fontWeight: FontWeight.w600)),
+              const SizedBox(width: 20),
+              const Text('CONFIRM',style: TextStyle(color: Colors.grey,fontSize: 16,fontWeight: FontWeight.w600)),
+              SizedBox(width: 10,)
+            ],
+          ),
+        )
+      ],
+    );
+    //   AlertDialog(
+
+
+    //   contentPadding: EdgeInsets.all(0),
+    //   content: Column(
+    //     crossAxisAlignment: CrossAxisAlignment.start,
+    //     children: [
+    //       Text('Select Till',style: TextStyle(color: Colors.grey.shade800,fontWeight: FontWeight.w600,fontSize: 18),),
+    //       Divider(),
+    //       Expanded(
+    //         child: ListView.builder(
+    //             shrinkWrap: true,
+    //             itemCount: tillBaseModel?.data?.length
+    //             ,itemBuilder: (context,index){
+    //           return InkWell(
+    //             splashColor: appThemeColor,
+    //             onTap: (){
+    //               print('tillBaseModel?.data?[index].isSelected = ${tillBaseModel?.data?[index].isSelected}');
+    //               kTillVal = tillBaseModel?.data?[index].tillCode ?? '';
+    //               for(int i = 0;i<tillBaseModel!.data!.length;i++)
+    //               {
+    //                 if(i == index)
+    //                 {
+    //                   tillBaseModel?.data?[i].isSelected = true;
+    //                 }else{
+    //                   tillBaseModel?.data?[i].isSelected = false;
+    //                 }
+    //               }
+    //               setState(() {
+    //                 print('After isSelected = ${tillBaseModel?.data?[index].isSelected}');
+    //               });
+    //             },
+    //             child: Padding(
+    //               padding: const EdgeInsets.symmetric(vertical: 10.0),
+    //               child: Row(
+    //                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    //                 children: [
+    //                   Text('${tillBaseModel?.data?[index].tillName}'),
+    //                   Visibility(
+    //                       visible: tillBaseModel?.data![index].isSelected ?? false,
+    //                       child: const Icon(Icons.check_circle_rounded))
+    //                 ],
+    //               ),
+    //             ),
+    //           );
+    //         }),
+    //       ),
+    //       Divider(),
+    //       Row(
+    //         mainAxisAlignment: MainAxisAlignment.end,
+    //         children: [
+    //           Text('CANCEL',style: TextStyle(color: appThemeColor,fontSize: 16,fontWeight: FontWeight.w600)),
+    //           const SizedBox(width: 10),
+    //           const Text('CONFIRM',style: TextStyle(color: Colors.grey,fontSize: 16,fontWeight: FontWeight.w600)),
+    //         ],
+    //       )
+    //     ],
+    //   ),
+    // );
+  }
+}
+
 
 class SettingFiledWidget extends StatelessWidget {
   final IconData leadingIcon;
   final String title;
   final Widget? trailingWidget;
+  final Function()? onTap;
   const SettingFiledWidget({
-    super.key, required this.leadingIcon, required this.title, this.trailingWidget,
+    super.key, required this.leadingIcon, required this.title, this.trailingWidget,this.onTap,
   });
 
   @override
@@ -109,6 +271,7 @@ class SettingFiledWidget extends StatelessWidget {
           leading: Icon(leadingIcon,color: Colors.grey.shade700),
           title: Text(title,style: TextStyle(color: Colors.grey.shade600)),
           trailing: trailingWidget,
+          onTap: onTap,
         )
       ],
     );

@@ -16,6 +16,7 @@ class _OrderScreenState extends State<OrderScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: Row(
           children: [
             SizedBox(
@@ -140,7 +141,7 @@ class _OrderScreenState extends State<OrderScreen> {
                                     height: 40,
                                     padding: EdgeInsets.all(10),
                                     decoration: BoxDecoration(
-                                        color: Colors.teal.shade200,
+                                        color: appThemeColorShade200,
                                         borderRadius: BorderRadius.all(Radius.circular(20))
                                     ),
                                     child: Center(child: Text('Order 1')),
@@ -154,8 +155,8 @@ class _OrderScreenState extends State<OrderScreen> {
                                       Container(
                                         height: 10,
                                         // width: 50,
-                                        decoration: const BoxDecoration(
-                                            color: Colors.orange,
+                                        decoration: BoxDecoration(
+                                            color: appComboColor,
                                             borderRadius: BorderRadius.all(Radius.circular(5))
                                         ),
                                       )
@@ -180,8 +181,8 @@ class _OrderScreenState extends State<OrderScreen> {
                             // height: 30,
                             width: double.infinity,
                             padding: EdgeInsets.symmetric(vertical: 10),
-                            decoration: const BoxDecoration(
-                                color: Colors.orange,
+                            decoration: BoxDecoration(
+                                color: appComboColor,
                                 borderRadius: BorderRadius.only(bottomLeft: Radius.circular(20),bottomRight: Radius.circular(20))
                             ),
                             child: const Center(child: Text('OCCUPIED',style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold))),
@@ -212,7 +213,6 @@ class _OrderScreenState extends State<OrderScreen> {
         ],
       ),
     );
-
   }
 }
 
