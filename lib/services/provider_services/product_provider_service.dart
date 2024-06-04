@@ -1,12 +1,49 @@
 import 'package:flutter/cupertino.dart';
-import '../../model/product_model.dart';
+import '../../model/cart_models/customer_list_model.dart';
+import '../../model/order_models/order_response_model.dart';
+import '../../model/product_models/product_model.dart';
 import '../../utils/common_values.dart';
 
 class ProductProviderService extends ChangeNotifier{
   final List<String> _categoryList = [];
   final Map<String,List<ProductList>> _categoryMap = {};
-
   final List<ProductList> _cartList = [];
+
+  List<OrderDataModel>? _orderDataModelList;
+
+  List<OrderDataModel>? get orderDataModelList => _orderDataModelList;
+
+  set orderDataModelList(List<OrderDataModel>? value) {
+    _orderDataModelList = value;
+    notifyListeners();
+  }
+  setTableData({required OrderDataModel orderDataModel,required String floorName,required String tableName})
+  {
+    orderDataModel.floorName = floorName;
+    orderDataModel.tableName = tableName;
+    notifyListeners();
+  }
+
+  removeFloorTable({required OrderDataModel orderDataModel})
+  {
+    orderDataModel.floorName = null;
+    orderDataModel.tableName = null;
+    notifyListeners();
+  }
+
+  setSelectUserData({required OrderDataModel orderDataModel, required CustomerData customerData})
+  {
+    orderDataModel.ledgerName = customerData.ledgerName;
+    orderDataModel.mobile = customerData.mobile;
+    notifyListeners();
+  }
+
+  removeUserData({required OrderDataModel orderDataModel})
+  {
+    orderDataModel.ledgerName = null;
+    orderDataModel.mobile = null;
+    notifyListeners();
+  }
 
   List<ProductList> get cartList => _cartList;
   int _overAllQuantity = 0;
@@ -22,7 +59,6 @@ class ProductProviderService extends ChangeNotifier{
   }
 
   addToCart(ProductList value) {
-    // _categoryMap[selectedCategoryType]?[index].quantity += 1;
     if(!_cartList.contains(value))
       {
         _cartList.add(value);
@@ -55,14 +91,6 @@ class ProductProviderService extends ChangeNotifier{
         }
       }
     calculateOverAllQuantity();
-    // if((_categoryMap[selectedCategoryType]?[index].quantity)! > 1)
-    // {
-    //   _categoryMap[selectedCategoryType]?[index].quantity -= 1;
-    //   notifyListeners();
-    // }else{
-    //   changeAddStatus(index);
-    // }
-    //notifyListeners();
   }
 
   deleteFromCart(ProductList value)
@@ -80,8 +108,6 @@ class ProductProviderService extends ChangeNotifier{
   }
 
   set productBaseModel(ProductBaseModel? value) {
-    // _productBaseModelVal = value;
-    // _categoryList = value?.data?.categoryList;
     if(value?.data != null)
       {
         _categoryMap['All'] = value!.data!.productList ?? [];
@@ -98,31 +124,10 @@ class ProductProviderService extends ChangeNotifier{
     notifyListeners();
   }
 
-  // set categoryList(List<CategoryList>? value) {
-  //   _categoryList = value;
-  // }
-
-  // addQuantity(int index){
-  //   _categoryMap[selectedCategoryType]?[index].quantity += 1;
-  //    // _productBaseModelVal?.data!.productList?[index].quantity += 1;
-  //   notifyListeners();
-  // }
-
   changeAddStatus(int index)
   {
     _categoryMap[selectedCategoryType]?[index].addStatus = !(_categoryMap[selectedCategoryType]?[index].addStatus)!;
     _cartList.add(_categoryMap[selectedCategoryType]![index]);
     notifyListeners();
   }
-
-  // removeQuantity(int index)
-  // {
-  //   if((_categoryMap[selectedCategoryType]?[index].quantity)! > 1)
-  //   {
-  //     _categoryMap[selectedCategoryType]?[index].quantity -= 1;
-  //     notifyListeners();
-  //   }else{
-  //     changeAddStatus(index);
-  //   }
-  // }
 }

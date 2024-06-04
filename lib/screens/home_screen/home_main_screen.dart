@@ -1,14 +1,16 @@
-import 'package:captain_app/list_screen/list_screen_old.dart';
-import 'package:captain_app/order_screens/order_screen.dart';
-import 'package:captain_app/setting/setting_screen.dart';
+import 'package:captain_app/services/provider_services/floor_table_provider_service.dart';
 import 'package:captain_app/utils/colors.dart';
+import 'package:captain_app/utils/custom_widgets/full_screen_loading_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../services/network_services/home_screen_services.dart';
+import '../../services/provider_services/bottom_provider.dart';
+import '../../utils/common_values.dart';
+import '../../utils/constants.dart';
+import '../../utils/custom_widgets/notification_widget.dart';
 import '../list_screen/list_screen.dart';
-import '../services/network_services/home_screen_services.dart';
-import '../services/provider_services/bottom_provider.dart';
-import '../utils/common_values.dart';
-import '../utils/constants.dart';
+import '../order_screens/order_screen.dart';
+import '../setting/setting_screen.dart';
 
 class HomeMainScreen extends StatefulWidget {
   const HomeMainScreen({super.key});
@@ -27,6 +29,20 @@ class _HomeMainScreenState extends State<HomeMainScreen> {
     }
   }
 
+  _getFloorTableData(BuildContext context) async {
+    try {
+      getFloorTableData(context: context).then((z) async {
+        setState(() {});
+      });
+    } catch (e) {
+      if(context.mounted)
+      {
+        print('Exception Occurred = $e');
+        showErrorAlertDialog(context: context, message: e.toString());
+      }
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -34,6 +50,7 @@ class _HomeMainScreenState extends State<HomeMainScreen> {
 
   @override
   void didChangeDependencies() {
+    _getFloorTableData(context);
     _getTillData(context);
     super.didChangeDependencies();
   }
@@ -41,14 +58,14 @@ class _HomeMainScreenState extends State<HomeMainScreen> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(child:
-    Consumer<BottomProvider>(
-        builder: (context, provider, _) {
+    Consumer2<BottomProvider,FloorTableProviderService>(
+        builder: (context, bottomProvider,floorTableProvider, _) {
       return Scaffold(
-        body: provider.bottomIndex == 0
+        body: floorTableProvider.floorList.isNotEmpty ? bottomProvider.bottomIndex == 0
             ? const OrderScreen()
-            : provider.bottomIndex == 1
+            : bottomProvider.bottomIndex == 1
                 ? const ListScreen()
-                : const SettingScreen(),
+                : const SettingScreen() : const FullScreenLoadingWidget(isLoading: true),
         bottomNavigationBar: BottomNavigationBar(
           items: const <BottomNavigationBarItem>[
             BottomNavigationBarItem(
@@ -64,13 +81,13 @@ class _HomeMainScreenState extends State<HomeMainScreen> {
               label: 'Settings',
             ),
           ],
-          currentIndex: provider.bottomIndex,
+          currentIndex: bottomProvider.bottomIndex,
           selectedItemColor: appComboColor,
           showUnselectedLabels: true,
           unselectedItemColor: Colors.grey.shade600,
             onTap: (index) {
-            print('provider.bottomIndex = ${provider.bottomIndex}, index = $index');
-                 provider.bottomIndex = index;
+            print('provider.bottomIndex = ${bottomProvider.bottomIndex}, index = $index');
+                 bottomProvider.bottomIndex = index;
             }),
       );
     }));

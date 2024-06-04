@@ -1,8 +1,8 @@
 import 'dart:io';
-
-import 'package:captain_app/home_screen/home_main_screen.dart';
-import 'package:captain_app/profile_screens/login_screen.dart';
+import 'package:captain_app/screens/home_screen/home_main_screen.dart';
+import 'package:captain_app/screens/profile_screens/login_screen.dart';
 import 'package:captain_app/services/provider_services/bottom_provider.dart';
+import 'package:captain_app/services/provider_services/floor_table_provider_service.dart';
 import 'package:captain_app/services/provider_services/order_provider.dart';
 import 'package:captain_app/services/provider_services/product_provider_service.dart';
 import 'package:captain_app/utils/colors.dart';
@@ -53,7 +53,7 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (context) => BottomProvider()),
         ChangeNotifierProvider(create: (context) => ProductProviderService()),
-        ChangeNotifierProvider(create: (context) => OrderProvider()),
+        ChangeNotifierProvider(create: (context) => FloorTableProviderService()),
       ],
       child: MaterialApp(
           debugShowCheckedModeBanner: false,

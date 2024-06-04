@@ -1,14 +1,14 @@
+import 'package:captain_app/screens/order_screens/table_choosing_screen.dart';
+import 'package:captain_app/services/provider_services/product_provider_service.dart';
 import 'package:captain_app/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
+import '../../services/network_services/orders_network_service.dart';
+import '../../utils/colors.dart';
+import '../../utils/custom_widgets/full_screen_loading_widget.dart';
+import '../../utils/custom_widgets/notification_widget.dart';
 import '../cutomer_screens/customer_list_screen.dart';
-import '../services/network_services/orders_network_service.dart';
-import '../services/provider_services/order_provider.dart';
-import '../utils/colors.dart';
-import '../utils/custom_widgets/full_screen_loading_widget.dart';
-import '../utils/custom_widgets/notification_widget.dart';
-import 'order_detail_screenOld.dart';
 import 'order_details_screen.dart';
 
 class ListScreen extends StatefulWidget {
@@ -22,9 +22,10 @@ class _ListScreenState extends State<ListScreen> {
   DateTime currentTime = DateTime.now();
 
   _getOrderList(BuildContext context) async {
-    OrderProvider orderProvider =
-    Provider.of<OrderProvider>(context, listen: false);
+    ProductProviderService orderProvider =
+    Provider.of<ProductProviderService>(context, listen: false);
     try {
+      print('orderProvider.orderDataModelList = ${orderProvider.orderDataModelList}');
       orderProvider.orderDataModelList ??= await getOrderListData();
     } catch (e) {
       if (context.mounted) {
@@ -35,11 +36,13 @@ class _ListScreenState extends State<ListScreen> {
 
   @override
   void initState() {
+    print('didChangeDependencies()');
     super.initState();
   }
 
   @override
   void didChangeDependencies() {
+    print('didChangeDependencies()');
     super.didChangeDependencies();
     _getOrderList(context);
   }
@@ -54,7 +57,7 @@ class _ListScreenState extends State<ListScreen> {
       body: Container(
         color: Colors.grey.shade100,
         child:
-        Consumer<OrderProvider>(builder: (providerContext, orderProvider, _) {
+        Consumer<ProductProviderService>(builder: (providerContext, orderProvider, _) {
           return orderProvider.orderDataModelList != null
               ? ListView.builder(
               itemCount: orderProvider.orderDataModelList?.length,
@@ -103,16 +106,16 @@ class _ListScreenState extends State<ListScreen> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Container(
-                            padding: EdgeInsets.symmetric(horizontal: 10,vertical: 5),
+                            padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 5),
                             decoration: BoxDecoration(
                                 color: appThemeColorShade200,
-                                borderRadius: BorderRadius.all(Radius.circular(20))
+                                borderRadius: const BorderRadius.all(Radius.circular(20))
                             ),
                             child: Text(
                                 orderProvider.orderDataModelList?[index]
                                     .saleOrderType ??
                                     '',
-                                style: TextStyle(
+                                style: const TextStyle(
                                   // color: Colors.white,
                                     fontSize: 16,
                                     fontWeight: FontWeight.w600)),
@@ -121,8 +124,13 @@ class _ListScreenState extends State<ListScreen> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: [
-                                const OrderFieldIconWideget(
-                                    iconData: Icons.table_bar_outlined),
+                                GestureDetector(
+                                  onTap: (){
+                                    Navigator.of(context).push(MaterialPageRoute(builder: (context)=> TableChoosingScreenScreen(orderDataModel: orderProvider.orderDataModelList?[index])));
+                                  },
+                                  child: const OrderFieldIconWideget(
+                                      iconData: Icons.table_bar_outlined),
+                                ),
                                 Padding(
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 5.0),
@@ -139,14 +147,14 @@ class _ListScreenState extends State<ListScreen> {
                                       if (('${orderProvider.orderDataModelList?[index].floorName ?? '_'} / ${orderProvider.orderDataModelList?[index].tableName ?? '_'}' ==
                                           '_ / _')) {
                                         //TODO
-                                        // Navigator.of(context).push(
-                                        //     MaterialPageRoute(
-                                        //         builder: (context) =>
-                                        //             FloorTableChoosingScreen(
-                                        //                 orderDataModel:
-                                        //                 orderProvider
-                                        //                     .orderDataModelList?[
-                                        //                 index])));
+                                        Navigator.of(context).push(
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    TableChoosingScreenScreen(
+                                                        orderDataModel:
+                                                        orderProvider
+                                                            .orderDataModelList?[
+                                                        index])));
                                       } else {
                                         orderProvider.removeFloorTable(
                                             orderDataModel: orderProvider
@@ -192,13 +200,23 @@ class _ListScreenState extends State<ListScreen> {
                                   ),
                                   GestureDetector(
                                       onTap: () async {
-                                        Navigator.of(context).push(
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                const CustomerListScreen()));
+                                        if('${orderProvider.orderDataModelList?[index].ledgerName ?? '_'} / ${orderProvider.orderDataModelList?[index].mobile
+                                            ?? '_'}' ==
+                                            '_ / _')
+                                          {
+                                            Navigator.of(context).push(
+                                                MaterialPageRoute(
+                                                    builder: (context) => CustomerListScreen(orderDataModel: orderProvider.orderDataModelList?[index])));
+                                          }else{
+                                          orderProvider.removeUserData(orderDataModel: orderProvider.orderDataModelList![index]);
+                                        }
                                       },
-                                      child: const OrderFieldIconWideget(
-                                          iconData: Icons.edit)),
+                                      child: OrderFieldIconWideget(
+                                          iconData: ('${orderProvider.orderDataModelList?[index].ledgerName ?? '_'} / ${orderProvider.orderDataModelList?[index].mobile
+                                              ?? '_'}' ==
+                                              '_ / _')
+                                              ? Icons.edit
+                                              : Icons.delete_forever)),
                                 ],
                               ),
                             )
@@ -228,15 +246,13 @@ class _ListScreenState extends State<ListScreen> {
                                     borderRadius: BorderRadius.circular(
                                         5),
                                   ))),
-                              onPressed: () {
-                                Navigator.of(context).push(MaterialPageRoute(
-                                    builder: (context) => OrderDetailsScreen(orderDataModel : orderProvider.orderDataModelList?[index],time: dateTime,
-                                      //Todo
-                                      // saleOrderNumber: orderProvider
-                                      //     .orderDataModelList![index]
-                                      //     .saleOrderNumber ??
-                                      //     ''
-                                    )));
+                              onPressed: () async {
+                                bool result = await Navigator.of(context).push(MaterialPageRoute(
+                                    builder: (context) => OrderDetailsScreen(orderDataModel : orderProvider.orderDataModelList?[index],time: dateTime,)));
+                                if(result&&context.mounted)
+                                  {
+                                    _getOrderList(context);
+                                  }
                               },
                               child: const Text('Open',
                                   style: TextStyle(

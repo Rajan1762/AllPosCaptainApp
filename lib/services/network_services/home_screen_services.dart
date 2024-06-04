@@ -16,19 +16,23 @@ Future<bool> getFloorTableData({required BuildContext context}) async{
   var response = await http.get(Uri.parse("$baseUrl$floorTableUrl"),headers: {'OID': kOrganizationCodeVal,'EID': kEmployeeCodeVal,'Authorization': 'Bearer $kAuthTokenVal'});
   print("getFloorTableData status code = ${response.statusCode}\nbody = ${response.body}");
   if(response.statusCode == 200 && response.body!=""){}
-  // {
-  //   FloorTableBaseModel floorTableBaseModel = FloorTableBaseModel.fromJson(json.decode(response.body));
-  //   final List<String?> floorNameList = floorTableBaseModel.data!.map((element) => element.floorName).toSet().toList();
-  //   for (var floorName in floorNameList) {
-  //     List<FloorTableModel> floorList = floorTableBaseModel.data!.where((element) => element.floorName == floorName).toList();
-  //     listOfFloorTableListVal.add(floorList);
-  //   }
-  //   if(context.mounted)
-  //     {
-  //       FloorTableProviderService provider = Provider.of<FloorTableProviderService>(context,listen: false);
-  //       provider.listOfFloorTableList = listOfFloorTableListVal;
-  //     }
-  // }
+  {
+    FloorTableBaseModel floorTableBaseModel = FloorTableBaseModel.fromJson(json.decode(response.body));
+    final List<String> floorNameList = floorTableBaseModel.data!.map((element) => element.floorName ?? '').toSet().toList();
+    List<List<FloorTableModel>> listOfFloorTableListVal = [];
+    for (var floorName in floorNameList) {
+      List<FloorTableModel> floorList = floorTableBaseModel.data!.where((element) => element.floorName == floorName).toList();
+      listOfFloorTableListVal.add(floorList);
+    }
+
+    if(context.mounted)
+      {
+        FloorTableProviderService provider = Provider.of<FloorTableProviderService>(context,listen: false);
+        provider.setFloorTableListValues(floorTableList: listOfFloorTableListVal, floorList: floorNameList);
+        // provider.listOfFloorTableList = listOfFloorTableListVal;
+        // provider.floorList = floorNameList;
+      }
+  }
   return false;
 }
 

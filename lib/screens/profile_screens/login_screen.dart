@@ -1,11 +1,11 @@
-import 'package:captain_app/home_screen/home_main_screen.dart';
 import 'package:captain_app/utils/colors.dart';
 import 'package:flutter/material.dart';
-import '../model/errorResponseModel.dart';
-import '../model/profile_models.dart';
-import '../services/network_services/profile_services.dart';
-import '../utils/custom_widgets/full_screen_loading_widget.dart';
-import '../utils/custom_widgets/notification_widget.dart';
+import '../../model/errorResponseModel.dart';
+import '../../model/profile_models.dart';
+import '../../services/network_services/profile_services.dart';
+import '../../utils/custom_widgets/full_screen_loading_widget.dart';
+import '../../utils/custom_widgets/notification_widget.dart';
+import '../home_screen/home_main_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});

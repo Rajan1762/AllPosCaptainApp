@@ -1,13 +1,17 @@
+import 'package:captain_app/services/provider_services/product_provider_service.dart';
 import 'package:captain_app/utils/colors.dart';
 import 'package:captain_app/utils/custom_widgets/full_screen_loading_widget.dart';
 import 'package:flutter/material.dart';
-import '../model/cart_models/customer_list_model.dart';
-import '../model/cart_models/user_save_edit_model.dart';
-import '../services/network_services/cart_screen_services.dart';
-import '../utils/custom_widgets/notification_widget.dart';
+import 'package:provider/provider.dart';
+import '../../model/cart_models/customer_list_model.dart';
+import '../../model/cart_models/user_save_edit_model.dart';
+import '../../model/order_models/order_response_model.dart';
+import '../../services/network_services/cart_screen_services.dart';
+import '../../utils/custom_widgets/notification_widget.dart';
 
 class CustomerListScreen extends StatefulWidget {
-  const CustomerListScreen({super.key});
+  final OrderDataModel? orderDataModel;
+  const CustomerListScreen({super.key, this.orderDataModel});
 
   @override
   State<CustomerListScreen> createState() => _CustomerListScreenState();
@@ -153,120 +157,122 @@ class _CustomerListScreenState extends State<CustomerListScreen> {
               )
             ],
                   ),
-                  body: Stack(
-            children: [
-              Column(
-                children: [
-                  Padding(
-                    padding:
-                        const EdgeInsets.symmetric(vertical: 15.0, horizontal: 20),
-                    child: TextField(
-                      decoration: InputDecoration(
-                        hintText: 'Search',
-                        hintStyle: const TextStyle(color: Colors.grey),
-                        suffixIcon: Icon(Icons.search, color: Colors.grey.shade700),
-                        enabledBorder: _searchFieldBorder(),
-                        focusedBorder: _searchFieldBorder(),
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                      child: FutureBuilder<List<CustomerData>?>(
-                    future: customerListData,
-                    builder: (BuildContext context,
-                        AsyncSnapshot<List<CustomerData>?> snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Center(
-                          child: SizedBox(
-                            height: 40,
-                              width: 40,
-                              child: CircularProgressIndicator(strokeWidth: 6,)),
-                        );
-                      } else if (snapshot.hasError) {
-                        showErrorAlertDialog(
-                            context: context, message: snapshot.error.toString());
-                        return Text('Error: ${snapshot.error}');
-                      } else if (snapshot.hasData) {
-                        return ListView.builder(
-                            itemCount: snapshot.data?.length,
-                            itemBuilder: (context, index) {
-                              return Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 20.0, vertical: 3),
-                                child: GestureDetector(
-                                  onTap: () {
-                                    _showCustomerDetailDialog(
-                                        context: context,
-                                        name: '${snapshot.data?[index].ledgerName}',
-                                        phoneNumber:
-                                            '${snapshot.data?[index].mobile}',
-                                        email: '${snapshot.data?[index].email}',
-                                        address:
-                                            '${snapshot.data?[index].billingAddressLine1}', cancelPressed: () {
-                                          Navigator.of(context).pop();
-                                    }, addPressed: () {
-                                      Navigator.of(context).pop();
-                                      Future.delayed(const Duration(milliseconds: 200),(){
-                                        _openAddCustomerScreen(context);
-                                      });
-                                    });
-                                  },
-                                  child: Column(
-                                    children: [
-                                      Row(
-                                        children: [
-                                          Expanded(
-                                              child: Text(
-                                            '${snapshot.data?[index].ledgerName}',
-                                            style: const TextStyle(
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.bold),
-                                          )),
-                                          Expanded(
-                                              child: Text(
-                                            '${snapshot.data?[index].email}',
-                                            style:
-                                                const TextStyle(color: Colors.grey),
-                                            textAlign: TextAlign.end,
-                                          )),
-                                        ],
-                                      ),
-                                      const SizedBox(
-                                        height: 5,
-                                      ),
-                                      Row(
-                                        children: [
-                                          Expanded(
-                                              child: Text(
-                                                  '${snapshot.data?[index].billingCity}',
-                                                  style: const TextStyle(
-                                                      color: Colors.grey))),
-                                          Expanded(
-                                              child: Text(
-                                            '${snapshot.data?[index].mobile}',
-                                            style:
-                                                const TextStyle(color: Colors.grey),
-                                            textAlign: TextAlign.end,
-                                          )),
-                                        ],
-                                      ),
-                                      const SizedBox(
-                                        height: 5,
-                                      ),
-                                      const Divider()
-                                    ],
-                                  ),
-                                ),
-                              );
-                            });
-                      } else {
-                        return const Text('No data');
-                      }
+                  body: Consumer<ProductProviderService>(
+                    builder: (context, productProvider, _) {
+                      return Column(
+                        children: [
+                          Padding(
+                            padding:
+                            const EdgeInsets.symmetric(vertical: 15.0, horizontal: 20),
+                            child: TextField(
+                              decoration: InputDecoration(
+                                hintText: 'Search',
+                                hintStyle: const TextStyle(color: Colors.grey),
+                                suffixIcon: Icon(Icons.search, color: Colors.grey.shade700),
+                                enabledBorder: _searchFieldBorder(),
+                                focusedBorder: _searchFieldBorder(),
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                              child: FutureBuilder<List<CustomerData>?>(
+                                future: customerListData,
+                                builder: (BuildContext context,
+                                    AsyncSnapshot<List<CustomerData>?> snapshot) {
+                                  if (snapshot.connectionState == ConnectionState.waiting) {
+                                    return const Center(
+                                      child: SizedBox(
+                                          height: 40,
+                                          width: 40,
+                                          child: CircularProgressIndicator(strokeWidth: 6,)),
+                                    );
+                                  } else if (snapshot.hasError) {
+                                    showErrorAlertDialog(
+                                        context: context, message: snapshot.error.toString());
+                                    return Text('Error: ${snapshot.error}');
+                                  } else if (snapshot.hasData) {
+                                    return ListView.builder(
+                                        itemCount: snapshot.data?.length,
+                                        itemBuilder: (context, index) {
+                                          return Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 20.0, vertical: 3),
+                                            child: GestureDetector(
+                                              onTap: () {
+                                                _showCustomerDetailDialog(
+                                                    context: context,
+                                                    name: '${snapshot.data?[index].ledgerName}',
+                                                    phoneNumber:
+                                                    '${snapshot.data?[index].mobile}',
+                                                    email: '${snapshot.data?[index].email}',
+                                                    address:
+                                                    '${snapshot.data?[index].billingAddressLine1}', cancelPressed: () {
+                                                  Navigator.of(context).pop();
+                                                }, addPressed: () {
+                                                if(widget.orderDataModel!=null)
+                                                  {
+                                                    productProvider.setSelectUserData(orderDataModel: widget.orderDataModel!, customerData: snapshot.data![index]);
+                                                    Navigator.of(context).pop();
+                                                  }
+                                                Navigator.of(context).pop();
+                                                });
+                                              },
+                                              child: Column(
+                                                children: [
+                                                  Row(
+                                                    children: [
+                                                      Expanded(
+                                                          child: Text(
+                                                            '${snapshot.data?[index].ledgerName}',
+                                                            style: const TextStyle(
+                                                                fontSize: 16,
+                                                                fontWeight: FontWeight.bold),
+                                                          )),
+                                                      Expanded(
+                                                          child: Text(
+                                                            '${snapshot.data?[index].email}',
+                                                            style:
+                                                            const TextStyle(color: Colors.grey),
+                                                            textAlign: TextAlign.end,
+                                                          )),
+                                                    ],
+                                                  ),
+                                                  const SizedBox(
+                                                    height: 5,
+                                                  ),
+                                                  Row(
+                                                    children: [
+                                                      Expanded(
+                                                          child: Text(
+                                                              '${snapshot.data?[index].billingCity}',
+                                                              style: const TextStyle(
+                                                                  color: Colors.grey))),
+                                                      Expanded(
+                                                          child: Text(
+                                                            '${snapshot.data?[index].mobile}',
+                                                            style:
+                                                            const TextStyle(color: Colors.grey),
+                                                            textAlign: TextAlign.end,
+                                                          )),
+                                                    ],
+                                                  ),
+                                                  const SizedBox(
+                                                    height: 5,
+                                                  ),
+                                                  const Divider()
+                                                ],
+                                              ),
+                                            ),
+                                          );
+                                        });
+                                  } else {
+                                    return const Text('No data');
+                                  }
+                                },
+                              ))
+                        ],
+                      );
                     },
-                  ))
-                ],
-              )
-            ],
                   ),
                 ),
             Visibility(

@@ -1,13 +1,13 @@
-import 'package:captain_app/cutomer_screens/customer_list_screen.dart';
+import 'package:captain_app/model/product_models/new_order_kot_model.dart';
 import 'package:captain_app/services/provider_services/product_provider_service.dart';
 import 'package:captain_app/utils/colors.dart';
 import 'package:captain_app/utils/common_values.dart';
 import 'package:captain_app/utils/constants.dart';
 import 'package:captain_app/utils/custom_widgets/full_screen_loading_widget.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../services/network_services/product_network_services.dart';
+import '../../services/network_services/product_network_services.dart';
+import '../cutomer_screens/customer_list_screen.dart';
 
 class NewOrderScreen extends StatefulWidget {
   const NewOrderScreen({super.key});
@@ -45,7 +45,7 @@ class _NewOrderScreenState extends State<NewOrderScreen> {
         Provider.of<ProductProviderService>(context, listen: false);
     if (provider.categoryMap.isEmpty) {
       try {
-        provider.productBaseModel = await getProductListData(context);
+        provider.productBaseModel = await getProductListData();
         if (provider.categoryMap.isNotEmpty) {
           setState(() {
             _isLoading = false;
@@ -55,6 +55,13 @@ class _NewOrderScreenState extends State<NewOrderScreen> {
         print("Error Occurred");
       }
     }
+  }
+
+  _postOrderKotData() async
+  {
+    await postOrderKotData(newOrderKotModel: NewOrderKotModel(
+      // saleOrderProducts:
+    ));
   }
 
   @override

@@ -13,6 +13,9 @@ const String customerListUrl = '$baseUrl/api/pos/cutomer-list';
 const String newUserSaveURL = '$baseUrl/api/ledgers';
 const String updateUserURL = '$baseUrl/api/ledgers/L001';
 const String orderDetailURL = '$baseUrl/api/sale-orders/details/';
+const String cancelSingleProductUrl = '$baseUrl/api/sale-orders/cancel-product';
+const String cancelAllProductOrderURL = '$baseUrl/api/sale-orders/cancel/';
+const String newOrderKotURL = '$baseUrl/api/sale-invoices/order';
 
 const String tableAssetImage = 'assets/images/table.png';
 const String kOrganizationCode = 'Organization_Code';
