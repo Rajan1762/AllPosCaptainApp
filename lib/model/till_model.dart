@@ -1,7 +1,7 @@
 class TillBaseModel {
   bool? status;
   String? statusCode;
-  List<Data>? data;
+  List<TillData>? data;
   String? message;
   Error? error;
   String? log;
@@ -18,9 +18,9 @@ class TillBaseModel {
     status = json['status'];
     statusCode = json['status_code'];
     if (json['data'] != null) {
-      data = <Data>[];
+      data = <TillData>[];
       json['data'].forEach((v) {
-        data!.add(Data.fromJson(v));
+        data!.add(TillData.fromJson(v));
       });
     }
     message = json['message'];
@@ -44,7 +44,7 @@ class TillBaseModel {
   }
 }
 
-class Data {
+class TillData {
   String? branch;
   String? tillCode;
   String? tillName;
@@ -56,7 +56,7 @@ class Data {
   String? activeStatus;
   bool isSelected = false;
 
-  Data(
+  TillData(
       {this.branch,
         this.tillCode,
         this.tillName,
@@ -67,7 +67,7 @@ class Data {
         this.enableTenderExchange,
         this.activeStatus});
 
-  Data.fromJson(Map<String, dynamic> json) {
+  TillData.fromJson(Map<String, dynamic> json) {
     branch = json['Branch'];
     tillCode = json['Till_Code'];
     tillName = json['Till_Name'];

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import '../../model/floor_table_model.dart';
-import '../../utils/common_values.dart';
 
 enum FloorTableTypeEnum { availableTables, bookedTable }
 
 class FloorTableProviderService extends ChangeNotifier{
   String? _selectedFloor;
+
   String? get selectedFloor => _selectedFloor;
   List<FloorTableModel> _selectedFloorTableList = [];
 

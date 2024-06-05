@@ -116,6 +116,8 @@ class ProductList {
   String? enablePriceChangeOnSale;
   bool addStatus = false;
   int quantity = 1;
+  String tableName = '';
+  String floorName = '';
 
   ProductList(
       {this.productCode,

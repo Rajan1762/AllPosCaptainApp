@@ -1,6 +1,9 @@
 import 'dart:convert';
+import 'package:captain_app/model/shift_register_model.dart';
+import 'package:captain_app/utils/common_functions.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../model/floor_table_model.dart';
 import '../../model/pos_models.dart';
 import '../../model/supplier_models.dart';
@@ -53,6 +56,8 @@ Future<TillBaseModel?> getTillData() async{
   print("getTillData status code = ${response.statusCode}\nbody = ${response.body}");
   if(response.statusCode == 200 && response.body!="")
   {
+    // final SharedPreferences prefs = await SharedPreferences.getInstance();
+    // prefs.setString(kTillString, tillBaseModel.data?.first.tillCode ?? '');
     return TillBaseModel.fromJson(json.decode(response.body));
   }
   return null;
@@ -61,7 +66,8 @@ Future<TillBaseModel?> getTillData() async{
 Future<PosBaseModel?> getPOSData() async{
   print("getPOSData url = $posUrl");
   var response = await http.get(Uri.parse(posUrl),headers: {'OID': kOrganizationCodeVal,'EID': kEmployeeCodeVal,'Authorization': 'Bearer $kAuthTokenVal'});
-  print("getPOSData status code = ${response.statusCode}\nbody = ${response.body}");
+  print("getPOSData status code = ${response.statusCode}body = ${response.body}");
+  printFull('body = ${response.body}');
   if(response.statusCode == 200 && response.body!="")
   {
     return PosBaseModel.fromJson(json.decode(response.body));
@@ -69,4 +75,14 @@ Future<PosBaseModel?> getPOSData() async{
   return null;
 }
 
-
+Future<ShiftRegisterModel?> getShiftRegisterData({required String branchCode}) async{
+  print("getShiftRegisterData url = $shiftNumberFetchURL$branchCode");
+  var response = await http.get(Uri.parse('$shiftNumberFetchURL$branchCode'),headers: {'OID': kOrganizationCodeVal,'EID': kEmployeeCodeVal,'Authorization': 'Bearer $kAuthTokenVal'});
+  print("getShiftRegisterData status code = ${response.statusCode}body = ${response.body}");
+  printFull('body = ${response.body}');
+  if(response.statusCode == 200 && response.body!="")
+  {
+    return ShiftRegisterModel.fromJson(json.decode(response.body));
+  }
+  return null;
+}

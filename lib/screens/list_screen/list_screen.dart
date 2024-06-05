@@ -156,7 +156,7 @@ class _ListScreenState extends State<ListScreen> {
                                                             .orderDataModelList?[
                                                         index])));
                                       } else {
-                                        orderProvider.removeFloorTable(
+                                        orderProvider.removeOrderFloorTable(
                                             orderDataModel: orderProvider
                                                 .orderDataModelList![index]);
                                       }

@@ -42,6 +42,7 @@ Future<void> _getSharedPrefValue() async {
   kAuthTokenVal = prefs.getString(kAuthToken) ?? "";
   kBranchCodeVal = prefs.getString(kBranchCodeString) ?? "";
   kTillVal = prefs.getString(kTillString) ?? "";
+  kEnableCashRegisterVal = prefs.getString(kEnableCashRegisterString) ?? "";
 }
 
 class MyApp extends StatelessWidget {

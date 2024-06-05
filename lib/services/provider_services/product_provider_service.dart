@@ -8,6 +8,18 @@ class ProductProviderService extends ChangeNotifier{
   final List<String> _categoryList = [];
   final Map<String,List<ProductList>> _categoryMap = {};
   final List<ProductList> _cartList = [];
+  // String? _selectedTable;
+  // String? _selectedFloor;
+
+  // String? get selectedFloor => _selectedFloor;
+  // String? get selectedTable => _selectedTable;
+  //
+  // setSelectedFloorTableData({required String selectedFloor,required String selectedTable})
+  // {
+  //   _selectedFloor = selectedFloor;
+  //   _selectedTable = selectedTable;
+  //   notifyListeners();
+  // }
 
   List<OrderDataModel>? _orderDataModelList;
 
@@ -17,14 +29,15 @@ class ProductProviderService extends ChangeNotifier{
     _orderDataModelList = value;
     notifyListeners();
   }
-  setTableData({required OrderDataModel orderDataModel,required String floorName,required String tableName})
+
+  setOrderFloorTableData({required OrderDataModel orderDataModel,required String floorName,required String tableName})
   {
     orderDataModel.floorName = floorName;
     orderDataModel.tableName = tableName;
     notifyListeners();
   }
 
-  removeFloorTable({required OrderDataModel orderDataModel})
+  removeOrderFloorTable({required OrderDataModel orderDataModel})
   {
     orderDataModel.floorName = null;
     orderDataModel.tableName = null;

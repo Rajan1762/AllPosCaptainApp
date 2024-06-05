@@ -1,5 +1,6 @@
 import 'package:captain_app/services/provider_services/floor_table_provider_service.dart';
 import 'package:captain_app/services/provider_services/product_provider_service.dart';
+import 'package:captain_app/utils/common_values.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -117,9 +118,11 @@ class _TableChoosingScreenScreenState extends State<TableChoosingScreenScreen> {
                     itemBuilder: (_, index){
                       return GestureDetector(
                         onTap: (){
+                          selectedFloor = floorTableProvider.selectedFloor;
+                          selectedTable = floorTableProvider.selectedFloorTableList[index].tableName;
                           if(widget.orderDataModel != null)
                             {
-                              productProvider.setTableData(orderDataModel: widget.orderDataModel!, floorName: floorTableProvider.selectedFloorTableList[index].floorName ?? '', tableName: floorTableProvider.selectedFloorTableList[index].tableName ?? '');
+                              productProvider.setOrderFloorTableData(orderDataModel: widget.orderDataModel!, floorName: floorTableProvider.selectedFloorTableList[index].floorName ?? '', tableName: floorTableProvider.selectedFloorTableList[index].tableName ?? '');
                             }
                           Navigator.pop(context);
                         },
@@ -174,7 +177,7 @@ class _TableChoosingScreenScreenState extends State<TableChoosingScreenScreen> {
                                     borderRadius: const BorderRadius.all(Radius.circular(20)),
                                     border: Border.all(color: Colors.cyan)
                                 ),
-                                child: Center(child: Text('${floorTableProvider.selectedFloorTableList[index].tableName}',style: TextStyle(color: Colors.cyan,fontWeight: FontWeight.bold,fontSize: 16))),
+                                child: Center(child: Text('${floorTableProvider.selectedFloorTableList[index].tableName}',style: const TextStyle(color: Colors.cyan,fontWeight: FontWeight.bold,fontSize: 16))),
                               ),
                               const Spacer(),
                               Container(

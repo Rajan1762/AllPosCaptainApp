@@ -1,3 +1,5 @@
+import 'package:captain_app/model/product_models/product_model.dart';
+
 class NewOrderKotModel {
   String? branchCode;
   String? tillCode;
@@ -62,16 +64,16 @@ class NewOrderKotModel {
     gSTNumber = json['GST_Number'];
     saleOrderNotes = json['Sale_Order_Notes'];
     generateToken = json['Generate_Token'];
-    if (json['Sale_Order_Products'] != null) {
+    if (json['Sale_Invoice_Products'] != null) {
       saleOrderProducts = <SaleOrderProducts>[];
-      json['Sale_Order_Products'].forEach((v) {
+      json['Sale_Invoice_Products'].forEach((v) {
         saleOrderProducts!.add(new SaleOrderProducts.fromJson(v));
       });
     }
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = <String, dynamic>{};
     data['Branch_Code'] = this.branchCode;
     data['Till_Code'] = this.tillCode;
     data['Shift_Register_Number'] = this.shiftRegisterNumber;
@@ -91,8 +93,12 @@ class NewOrderKotModel {
     data['GST_Number'] = this.gSTNumber;
     data['Sale_Order_Notes'] = this.saleOrderNotes;
     data['Generate_Token'] = this.generateToken;
+    data['Sale_Invoice_Charges'] = [];
+    data['Sale_Invoice_Discounts'] = [];
+    data['Sale_Invoice_Histories'] = [];
+    data['Sale_Invoice_Payments'] = [];
     if (this.saleOrderProducts != null) {
-      data['Sale_Order_Products'] =
+      data['Sale_Invoice_Products'] =
           this.saleOrderProducts!.map((v) => v.toJson()).toList();
     }
     return data;
@@ -157,6 +163,24 @@ class SaleOrderProducts {
         this.productAddons,
         this.totalPrice});
 
+  SaleOrderProducts.fromProductList(ProductList productList) {
+    kitchenName = productList.kitchenName;
+    productCode = productList.productCode;
+    sKUCode = productList.sKUCode;
+    hSNSACCode = productList.hSNSACCode;
+    productName = productList.productName;
+    nativeName = productList.nativeName;
+    productCategory = productList.productCategory;
+    productType = productList.productType;
+    productUOM = productList.productUOM;
+    productPrice = productList.salePrice1; // assuming salePrice1 is the default
+    discountPercentage = productList.discountPercentage;
+    taxGroup = productList.taxGroup;
+    taxPercentage = productList.taxPercentage;
+    cessPercentage = productList.cessPercentage;
+    salePrice = productList.salePrice1; // assuming salePrice1 is the default
+  }
+
   SaleOrderProducts.fromJson(Map<String, dynamic> json) {
     kitchenName = json['Kitchen_Name'];
     cookingNotes = json['Cooking_Notes'];
@@ -216,6 +240,10 @@ class SaleOrderProducts {
     data['Sale_Price'] = this.salePrice;
     data['Product_Addons'] = this.productAddons;
     data['Total_Price'] = this.totalPrice;
+    data['Sale_Invoice_Product_Addons'] = [];
+    data['Sale_Invoice_Product_Charges'] = [];
+    data['Sale_Invoice_Product_Discounts'] = [];
+    data['Sale_Invoice_Product_Taxes'] = [];
     return data;
   }
 }

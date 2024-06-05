@@ -1,4 +1,6 @@
+import 'package:captain_app/services/provider_services/product_provider_service.dart';
 import 'package:captain_app/utils/colors.dart';
+import 'package:captain_app/utils/common_values.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -17,6 +19,7 @@ class _OrderScreenState extends State<OrderScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final ProductProviderService productProvider= Provider.of<ProductProviderService>(context,listen: false);
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -127,70 +130,79 @@ class _OrderScreenState extends State<OrderScreen> {
                           mainAxisSpacing: 20,
                           crossAxisCount: 2),
                       itemBuilder: (_, index){
-                        return Container(
-                          decoration: const BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.all(Radius.circular(20))
-                          ),
-                          child: Column(
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.all(10.0),
-                                child: Row(
-                                  children: [
-                                    Expanded(
-                                      flex: 2,
-                                      child: Container(
-                                        height: 40,
-                                        padding: const EdgeInsets.all(10),
-                                        decoration: BoxDecoration(
-                                            color: appThemeColorShade200,
-                                            borderRadius: const BorderRadius.all(Radius.circular(20))
+                        return GestureDetector(
+                          onTap: (){
+                            selectedFloor = floorTableProvider.selectedFloorTableList[index].floorName ?? '';
+                            selectedTable = floorTableProvider.selectedFloorTableList[index].tableName ?? '';
+                            numberOfChairsInSelectedTable = floorTableProvider.selectedFloorTableList[index].chairs;
+                            // productProvider.setSelectedFloorTableData(selectedFloor: floorTableProvider.selectedFloor ?? '',
+                            //     selectedTable: floorTableProvider.selectedFloorTableList[index].tableName ?? ''); //= floorTableProvider.selectedFloorTableList[index].tableName;
+                          },
+                          child: Container(
+                            decoration: const BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.all(Radius.circular(20))
+                            ),
+                            child: Column(
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.all(10.0),
+                                  child: Row(
+                                    children: [
+                                      Expanded(
+                                        flex: 2,
+                                        child: Container(
+                                          height: 40,
+                                          padding: const EdgeInsets.all(10),
+                                          decoration: BoxDecoration(
+                                              color: appThemeColorShade200,
+                                              borderRadius: const BorderRadius.all(Radius.circular(20))
+                                          ),
+                                          child: Center(child: Text('Order ${index+1}')),
                                         ),
-                                        child: Center(child: Text('Order ${index+1}')),
                                       ),
-                                    ),
-                                    const SizedBox(width: 20),
-                                    Expanded(
-                                      child: Column(
-                                        children: [
-                                          Text('${floorTableProvider.selectedFloorTableList[index].chairs}/4'),
-                                          Container(
-                                            height: 10,
-                                            // width: 50,
-                                            decoration: BoxDecoration(
-                                                color: appComboColor,
-                                                borderRadius: const BorderRadius.all(Radius.circular(5))
-                                            ),
-                                          )
-                                        ],
-                                      ),
-                                    )
-                                  ],
+                                      const SizedBox(width: 20),
+                                      Expanded(
+                                        child: Column(
+                                          children: [
+                                            Text('${floorTableProvider.selectedFloorTableList[index].chairs}/4'),
+                                            Container(
+                                              height: 10,
+                                              // width: 50,
+                                              decoration: BoxDecoration(
+                                                  color: appComboColor,
+                                                  borderRadius: const BorderRadius.all(Radius.circular(5))
+                                              ),
+                                            )
+                                          ],
+                                        ),
+                                      )
+                                    ],
+                                  ),
                                 ),
-                              ),
-                              Container(
-                                height: 40,
-                                width: 120,
-                                margin: const EdgeInsets.all(10),
-                                decoration: BoxDecoration(
-                                    borderRadius: const BorderRadius.all(Radius.circular(20)),
-                                    border: Border.all(color: Colors.cyan)
+                                Container(
+                                  height: 40,
+                                  width: 120,
+                                  margin: const EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                      borderRadius: const BorderRadius.all(Radius.circular(20)),
+                                      border: Border.all(color: Colors.cyan)
+                                  ),
+                                  child: Center(child: Text('${floorTableProvider.selectedFloorTableList[index].tableName}',style: TextStyle(color: Colors.cyan,fontWeight: FontWeight.bold,fontSize: 16))),
                                 ),
-                                child: Center(child: Text('${floorTableProvider.selectedFloorTableList[index].tableName}',style: TextStyle(color: Colors.cyan,fontWeight: FontWeight.bold,fontSize: 16))),
-                              ),
-                              const Spacer(),
-                              Container(
-                                // height: 30,
-                                width: double.infinity,
-                                padding: const EdgeInsets.symmetric(vertical: 10),
-                                decoration: BoxDecoration(
-                                    color: appComboColor,
-                                    borderRadius: const BorderRadius.only(bottomLeft: Radius.circular(20),bottomRight: Radius.circular(20))
-                                ),
-                                child: Center(child: Text('${floorTableProvider.selectedFloorTableList[index].availableStatus}'.toUpperCase(),style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold))),
-                              )
-                            ],
+                                const Spacer(),
+                                Container(
+                                  // height: 30,
+                                  width: double.infinity,
+                                  padding: const EdgeInsets.symmetric(vertical: 10),
+                                  decoration: BoxDecoration(
+                                      color: appComboColor,
+                                      borderRadius: const BorderRadius.only(bottomLeft: Radius.circular(20),bottomRight: Radius.circular(20))
+                                  ),
+                                  child: Center(child: Text('${floorTableProvider.selectedFloorTableList[index].availableStatus}'.toUpperCase(),style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold))),
+                                )
+                              ],
+                            ),
                           ),
                         );
                       }),

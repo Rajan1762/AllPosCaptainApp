@@ -146,6 +146,7 @@ class _TillAlertDialogStatefulWidgetState extends State<TillAlertDialogStatefulW
                 onTap: (){
                   print('tillBaseModel?.data?[index].isSelected = ${tillBaseModel?.data?[index].isSelected}');
                   kTillVal = tillBaseModel?.data?[index].tillCode ?? '';
+                  kEnableCashRegisterVal = tillBaseModel?.data?[index].enableCashRegister ?? '';
                   for(int i = 0;i<tillBaseModel!.data!.length;i++)
                   {
                     if(i == index)
@@ -175,16 +176,16 @@ class _TillAlertDialogStatefulWidgetState extends State<TillAlertDialogStatefulW
             }),
           ),
         ),
-        Divider(),
+        const Divider(),
         Padding(
           padding: const EdgeInsets.all(10.0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              Text('CANCEL',style: TextStyle(color: appThemeColor,fontSize: 18,fontWeight: FontWeight.w600)),
+              GestureDetector(onTap: (){Navigator.of(context).pop();},child: Text('CANCEL',style: TextStyle(color: appThemeColor,fontSize: 18,fontWeight: FontWeight.w600))),
               const SizedBox(width: 20),
-              const Text('CONFIRM',style: TextStyle(color: Colors.grey,fontSize: 16,fontWeight: FontWeight.w600)),
-              SizedBox(width: 10,)
+              GestureDetector(onTap: (){Navigator.of(context).pop();},child: const Text('CONFIRM',style: TextStyle(color: Colors.grey,fontSize: 16,fontWeight: FontWeight.w600))),
+              const SizedBox(width: 10,)
             ],
           ),
         )

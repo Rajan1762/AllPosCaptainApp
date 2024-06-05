@@ -1,8 +1,12 @@
 import 'package:captain_app/services/provider_services/floor_table_provider_service.dart';
 import 'package:captain_app/utils/colors.dart';
+import 'package:captain_app/utils/common_functions.dart';
 import 'package:captain_app/utils/custom_widgets/full_screen_loading_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../../model/pos_models.dart';
+import '../../model/shift_register_model.dart';
 import '../../services/network_services/home_screen_services.dart';
 import '../../services/provider_services/bottom_provider.dart';
 import '../../utils/common_values.dart';
@@ -25,22 +29,67 @@ class _HomeMainScreenState extends State<HomeMainScreen> {
 
   _getTillData(BuildContext context) async {
     if (kTillVal == "") {
-      tillBaseModel = await getTillData();
+        await getTillData().then((v)async{
+          tillBaseModel = v;
+          PosBaseModel? posBaseModel= await getPOSData();
+          ShiftRegisterModel? shiftRegisterModel = await getShiftRegisterData(branchCode: kBranchCodeVal);
+          if(shiftRegisterModel==null||posBaseModel==null)
+          {
+            throw CustomException('Something went wrong try again later');
+          }
+          shiftRegisterNumber = shiftRegisterModel.data?.shiftRegisterNumber;
+        });
     }
   }
 
   _getFloorTableData(BuildContext context) async {
     try {
       getFloorTableData(context: context).then((z) async {
-        setState(() {});
+        if(context.mounted)
+          {
+            await _getTillData(context);
+            setState(() {});
+          }
       });
     } catch (e) {
       if(context.mounted)
       {
         print('Exception Occurred = $e');
-        showErrorAlertDialog(context: context, message: e.toString());
+        showErrorAlertDialog(context: context, message: e.toString(),onPressed: (){
+          _emptyDataAndNavigateToLoginScreen(context);
+        });
       }
     }
+  }
+
+  _emptyDataAndNavigateToLoginScreen(BuildContext context)async{
+    kOrganizationCodeVal = "";
+    kEmployeeCodeVal = "";
+    kEmployeeNameVal = "";
+    kIsCaptainVal = "";
+    kAuthTokenVal = "";
+    kBranchCodeVal = "";
+    kTillVal = "";
+    selectedCategoryType = 'ITEMS';
+    tillBaseModel = null;
+    selectedFloor = null;
+    selectedTable = null;
+    numberOfChairsInSelectedTable = null;
+    customerMobileNumber = null;
+    customerEmailId = null;
+    customerLedgerCode = null;
+    customerLedgerName = null;
+    customerGSTNumber = null;
+    customerAddress = null;
+    posBaseModel = null;
+    shiftRegisterNumber = null;
+    kEnableCashRegisterVal = 'No';
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    preferences.clear();
+    if(context.mounted)
+      {
+        Navigator.of(context).pop();
+      }
   }
 
   @override
@@ -51,7 +100,6 @@ class _HomeMainScreenState extends State<HomeMainScreen> {
   @override
   void didChangeDependencies() {
     _getFloorTableData(context);
-    _getTillData(context);
     super.didChangeDependencies();
   }
 

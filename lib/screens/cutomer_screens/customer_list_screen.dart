@@ -7,6 +7,7 @@ import '../../model/cart_models/customer_list_model.dart';
 import '../../model/cart_models/user_save_edit_model.dart';
 import '../../model/order_models/order_response_model.dart';
 import '../../services/network_services/cart_screen_services.dart';
+import '../../utils/common_values.dart';
 import '../../utils/custom_widgets/notification_widget.dart';
 
 class CustomerListScreen extends StatefulWidget {
@@ -209,6 +210,12 @@ class _CustomerListScreenState extends State<CustomerListScreen> {
                                                     '${snapshot.data?[index].billingAddressLine1}', cancelPressed: () {
                                                   Navigator.of(context).pop();
                                                 }, addPressed: () {
+                                                  customerMobileNumber = snapshot.data?[index].mobile;
+                                                  customerEmailId = snapshot.data?[index].email;
+                                                  customerLedgerCode = snapshot.data?[index].ledgerCode;
+                                                  customerLedgerName = snapshot.data?[index].ledgerName;
+                                                  customerGSTNumber = snapshot.data?[index].gSTNumber;
+                                                  customerAddress = snapshot.data?[index].billingAddressLine1;
                                                 if(widget.orderDataModel!=null)
                                                   {
                                                     productProvider.setSelectUserData(orderDataModel: widget.orderDataModel!, customerData: snapshot.data![index]);
