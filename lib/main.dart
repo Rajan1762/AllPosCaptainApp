@@ -6,6 +6,7 @@ import 'package:captain_app/services/provider_services/floor_table_provider_serv
 import 'package:captain_app/services/provider_services/order_provider.dart';
 import 'package:captain_app/services/provider_services/product_provider_service.dart';
 import 'package:captain_app/utils/colors.dart';
+import 'package:captain_app/utils/common_values.dart';
 import 'package:captain_app/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -50,6 +51,8 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    screenHeight = MediaQuery.of(context).size.height;
+    screenWidth = MediaQuery.of(context).size.width;
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (context) => BottomProvider()),

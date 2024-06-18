@@ -1,4 +1,5 @@
 import 'package:captain_app/utils/colors.dart';
+import 'package:captain_app/utils/constants.dart';
 import 'package:flutter/material.dart';
 import '../../model/errorResponseModel.dart';
 import '../../model/profile_models.dart';
@@ -47,85 +48,89 @@ class _LoginScreenState extends State<LoginScreen> {
             child: SizedBox(
               height: MediaQuery.of(context).size.height,
               width: MediaQuery.of(context).size.width,
-              child: Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(15.0),
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        const Image(image: AssetImage('assets/loginBgImage.png')),
-                        LoginFieldWidget(labelText: 'Account ID',onChanged:(s){accountId.clear();accountId.write(s);}),
-                        LoginFieldWidget(labelText: 'Username',onChanged:(s){userName.clear();userName.write(s);}),
-                        LoginFieldWidget(labelText: 'Password', obscureStatus: true,onChanged:(s){password.clear();password.write(s);}),
-                        Row(
-                          children: [
-                            Checkbox(
-                                activeColor: Colors.orange.shade600,
-                                value: checkBoxStatus,
-                                onChanged: (s) {
-                                  setState(() {
-                                    checkBoxStatus = s ?? false;
-                                  });
-                                }),
-                            Text('Remember me',
-                                style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600,
-                                    color: Colors.grey.shade800))
-                          ],
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20.0,vertical: 10),
-                          child: ElevatedButton(
-                              style: ButtonStyle(
-                                shape: WidgetStateProperty.all<OutlinedBorder?>(
-                                    RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(
-                                      15.0),
-                                )),
-                                padding: WidgetStateProperty.all<EdgeInsetsGeometry?>(
-                                    const EdgeInsets.all(15)),
-                                backgroundColor:
-                                    WidgetStateProperty.all<Color?>(appThemeColor),
-                                foregroundColor:
-                                    WidgetStateProperty.all<Color?>(Colors.white),
-                              ),
-                              onPressed: () {
-                                if(_formKey.currentState!.validate())
-                                  {
-                                    setState(() => _isLoading=true);
-                                    _loginUser(userName: userName.toString(), password: password.toString(), accountID: accountId.toString()).then((e){
-                                      if (context.mounted) {
-                                        setState(() => _isLoading=false);
-                                        if (e.obj != null) {
-                                          if(!e.obj.status!)
-                                          {
-                                            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                                              content: Text('UserName Or Password is Incorrect'),
-                                            ));
-                                          }else{
-                                            Navigator.of(context).push(MaterialPageRoute(builder: (context)=>const HomeMainScreen()));
-                                          }
-                                        } else {
-                                          showErrorAlertDialog(context: context, message: e.errorMessage ?? '');
-                                        }
-                                      }
-                                    });
-                                  }else{
-                                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                                    content: Text('Fill all fields to Login'),
-                                  ));
-                                }
-                              },
-                              child: const Text(
-                                'LOGIN',
-                                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+              child: Padding(
+                padding: const EdgeInsets.all(15.0),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(top: 30,bottom: 15.0),
+                        child: SizedBox(
+                          height: 100,
+                            width: MediaQuery.of(context).size.width * 0.8,
+                            child: const Image(image: AssetImage(kLoginBgImage),fit: BoxFit.cover)),
+                      ),
+                      LoginFieldWidget(labelText: 'Account ID',onChanged:(s){accountId.clear();accountId.write(s);}),
+                      LoginFieldWidget(labelText: 'Username',onChanged:(s){userName.clear();userName.write(s);}),
+                      LoginFieldWidget(labelText: 'Password', obscureStatus: true,onChanged:(s){password.clear();password.write(s);}),
+                      Row(
+                        children: [
+                          Checkbox(
+                              activeColor: Colors.red,
+                              value: checkBoxStatus,
+                              onChanged: (s) {
+                                setState(() {
+                                  checkBoxStatus = s ?? false;
+                                });
+                              }),
+                          Text('Remember me',
+                              style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.grey.shade800))
+                        ],
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20.0,vertical: 10),
+                        child: ElevatedButton(
+                            style: ButtonStyle(
+                              shape: WidgetStateProperty.all<OutlinedBorder?>(
+                                  RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(
+                                    15.0),
                               )),
-                        )
-                      ],
-                    ),
+                              padding: WidgetStateProperty.all<EdgeInsetsGeometry?>(
+                                  const EdgeInsets.all(15)),
+                              backgroundColor:
+                                  WidgetStateProperty.all<Color?>(appThemeColor),
+                              foregroundColor:
+                                  WidgetStateProperty.all<Color?>(Colors.white),
+                            ),
+                            onPressed: () {
+                              if(_formKey.currentState!.validate())
+                                {
+                                  setState(() => _isLoading=true);
+                                  _loginUser(userName: userName.toString(), password: password.toString(), accountID: accountId.toString()).then((e){
+                                    if (context.mounted) {
+                                      setState(() => _isLoading=false);
+                                      if (e.obj != null) {
+                                        if(!e.obj.status!)
+                                        {
+                                          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                                            content: Text('UserName Or Password is Incorrect'),
+                                          ));
+                                        }else{
+                                          Navigator.of(context).push(MaterialPageRoute(builder: (context)=>const HomeMainScreen()));
+                                        }
+                                      } else {
+                                        showErrorAlertDialog(context: context, message: e.errorMessage ?? '');
+                                      }
+                                    }
+                                  });
+                                }else{
+                                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                                  content: Text('Fill all fields to Login'),
+                                ));
+                              }
+                            },
+                            child: const Text(
+                              'LOGIN',
+                              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                            )),
+                      )
+                    ],
                   ),
                 ),
               ),

@@ -1,6 +1,7 @@
 import 'package:captain_app/services/provider_services/product_provider_service.dart';
 import 'package:captain_app/utils/colors.dart';
 import 'package:captain_app/utils/common_values.dart';
+import 'package:captain_app/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -27,7 +28,7 @@ class _OrderScreenState extends State<OrderScreen> {
           children: [
             SizedBox(
                 width: MediaQuery.of(context).size.width * 0.45,
-                child: const Image(image: AssetImage('assets/appBarBgImage.png'),fit: BoxFit.fill,)),
+                child: const Image(image: AssetImage(kAppBarBGImage),fit: BoxFit.cover)),
             const Spacer(),
             const Column(
               crossAxisAlignment: CrossAxisAlignment.end,

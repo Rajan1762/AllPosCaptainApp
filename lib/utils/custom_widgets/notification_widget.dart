@@ -18,9 +18,9 @@ void showErrorAlertDialog({required BuildContext context,required String message
   });
 }
 
-void showCustomAlertDialog({required BuildContext context,String? message,String? title})
+void showCustomAlertDialog({required BuildContext context,String? message,String? title,Function()? onTap})
 {
-  showDialog(context: context, builder: (BuildContext context){
+  showDialog(context: context,barrierDismissible: false, builder: (BuildContext context){
     return AlertDialog(
       title: title!=null? Text(title) : null,
       content: message!=null?Text(message):null,
@@ -30,7 +30,9 @@ void showCustomAlertDialog({required BuildContext context,String? message,String
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text('OK',style: TextStyle(color: appThemeColor)),
+              GestureDetector(
+                onTap: onTap ?? ()=>Navigator.of(context).pop(),
+                  child: Text('OK',style: TextStyle(color: appThemeColor))),
             ],
           ),
         ),

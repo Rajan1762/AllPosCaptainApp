@@ -1,3 +1,5 @@
+import 'package:captain_app/model/errorResponseModel.dart';
+import 'package:captain_app/screens/profile_screens/login_screen.dart';
 import 'package:captain_app/services/provider_services/floor_table_provider_service.dart';
 import 'package:captain_app/utils/colors.dart';
 import 'package:captain_app/utils/common_functions.dart';
@@ -30,37 +32,99 @@ class _HomeMainScreenState extends State<HomeMainScreen> {
   _getTillData(BuildContext context) async {
     if (kTillVal == "") {
         await getTillData().then((v)async{
-          tillBaseModel = v;
-          PosBaseModel? posBaseModel= await getPOSData();
-          ShiftRegisterModel? shiftRegisterModel = await getShiftRegisterData(branchCode: kBranchCodeVal);
-          if(shiftRegisterModel==null||posBaseModel==null)
-          {
-            throw CustomException('Something went wrong try again later');
+          ErrorResponseModel tillErrorResponseModel = v;
+          if (context.mounted) {
+            if (tillErrorResponseModel.errorMessage != null) {
+              showErrorAlertDialog(context: context, message: tillErrorResponseModel.errorMessage!);
+              Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(builder: (context) => const LoginScreen()),
+                    (Route<dynamic> route) => false,
+              );
+            } else if (tillErrorResponseModel.obj != null) {
+              tillBaseModel = tillErrorResponseModel.obj;
+            }
           }
-          shiftRegisterNumber = shiftRegisterModel.data?.shiftRegisterNumber;
+          ErrorResponseModel posResponseModel = await getPOSData();
+          if (context.mounted) {
+            if (posResponseModel.errorMessage != null) {
+              showErrorAlertDialog(context: context, message: posResponseModel.errorMessage!);
+              Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(builder: (context) => const LoginScreen()),
+                    (Route<dynamic> route) => false,
+              );
+            } else if (posResponseModel.obj != null) {
+              PosBaseModel? posBaseModel = posResponseModel.obj;
+            }
+            ShiftRegisterModel? shiftRegisterModel = await getShiftRegisterData(branchCode: kBranchCodeVal);
+            if(shiftRegisterModel==null)
+            {
+              throw CustomException('Something went wrong while retrieving ShiftRegister number');
+            }
+            shiftRegisterNumber = shiftRegisterModel.data?.shiftRegisterNumber;
+          }
         });
     }
   }
 
   _getFloorTableData(BuildContext context) async {
     try {
-      getFloorTableData(context: context).then((z) async {
-        if(context.mounted)
-          {
-            await _getTillData(context);
-            setState(() {});
-          }
-      });
+      ErrorResponseModel errorResponseModel = await getFloorTableData(context: context);
+      if (!context.mounted) return;
+      if (errorResponseModel.errorMessage != null) {
+        if (errorResponseModel.errorMessage == kSessionTimeOutTitle) {
+          showCustomAlertDialog(
+            context: context,
+            title: errorResponseModel.errorMessage!,
+            onTap: () => _emptyDataAndNavigateToLoginScreen(context),
+          );
+        } else {
+          showErrorAlertDialog(context: context, message: errorResponseModel.errorMessage!);
+        }
+      } else if (errorResponseModel.obj != null) {
+        await _getTillData(context);
+        setState(() {});
+      }
     } catch (e) {
-      if(context.mounted)
-      {
-        print('Exception Occurred = $e');
-        showErrorAlertDialog(context: context, message: e.toString(),onPressed: (){
-          _emptyDataAndNavigateToLoginScreen(context);
-        });
+      if (context.mounted) {
+        print('[][]][]Exception Occurred = $e');
+        showErrorAlertDialog(
+          context: context,
+          message: e.toString(),
+        );
       }
     }
   }
+  // _getFloorTableData(BuildContext context) async {
+  //   try {
+  //     getFloorTableData(context: context).then((z) async {
+  //       ErrorResponseModel errorResponseModel = z;
+  //       if(context.mounted)
+  //         {
+  //           if (errorResponseModel.errorMessage != null) {
+  //             if(errorResponseModel.errorMessage == kSessionTimeOutTitle)
+  //               {
+  //                 showCustomAlertDialog(context: context, title: errorResponseModel.errorMessage!,onTap: (){
+  //                   _emptyDataAndNavigateToLoginScreen(context);
+  //                 });
+  //               }else{
+  //               showErrorAlertDialog(context: context, message: errorResponseModel.errorMessage!);
+  //             }
+  //           } else if (errorResponseModel.obj != null) {
+  //             await _getTillData(context);
+  //             setState(() {});
+  //           }
+  //         }
+  //     });
+  //   } catch (e) {
+  //     if(context.mounted)
+  //     {
+  //       print('Exception Occurred = $e');
+  //       showErrorAlertDialog(context: context, message: e.toString(),onPressed: (){
+  //         _emptyDataAndNavigateToLoginScreen(context);
+  //       });
+  //     }
+  //   }
+  // }
 
   _emptyDataAndNavigateToLoginScreen(BuildContext context)async{
     kOrganizationCodeVal = "";
@@ -88,7 +152,10 @@ class _HomeMainScreenState extends State<HomeMainScreen> {
     preferences.clear();
     if(context.mounted)
       {
-        Navigator.of(context).pop();
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => const LoginScreen()),
+              (Route<dynamic> route) => false,
+        );
       }
   }
 

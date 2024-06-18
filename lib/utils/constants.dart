@@ -19,6 +19,9 @@ const String newOrderKotURL = '$baseUrl/api/sale-invoices/order';
 const String shiftNumberFetchURL = '$baseUrl/api/pos/shift-register-number/';
 const String cashRegisterNumberFetchURL = '$baseUrl/api/pos/cash-register-number/';
 
+const String kSessionTimeOutTitle = 'Session TimeOut!';
+const String kNetworkErrorTitle = 'Something Went Wrong';
+const String kNetworkErrorMessage = 'Please try again later';
 const String tableAssetImage = 'assets/images/table.png';
 const String kOrganizationCode = 'Organization_Code';
 const String kEmployeeCode = 'Employee_Code';
@@ -44,7 +47,9 @@ String kEmployeeNameVal = '';
 String kTillVal = '';
 const String kAvailableStatusString = 'Free';
 const String kOccupiedString = 'Occupied';
-const String kOfflineImage = "assets/images/offline_image.jpg";
+const String kLoginBgImage = 'assets/images/loginBg.png';
+const String kAppBarBGImage = 'assets/images/appBarBgImage.png';
+const String kOfflineImage = "assets/images/offline_image.png";
 // const String kUserDummyImage = "assets/images/userDummyImage.jpg";
 const String kFoodDummyImage = "assets/images/food_image1.jpg";
 

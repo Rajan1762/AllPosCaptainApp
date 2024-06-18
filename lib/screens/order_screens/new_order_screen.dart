@@ -22,9 +22,11 @@ class NewOrderScreen extends StatefulWidget {
 }
 
 class _NewOrderScreenState extends State<NewOrderScreen> {
-  double _animatedHeightValue = 40;
+  double _animatedHeightValue = (screenHeight * 0.6) + 40;
   bool vegOnlySwitchStatus = true;
   bool _isLoading = false;
+  final FocusNode _focusNode1 = FocusNode();
+  final FocusNode _focusNode2 = FocusNode();
 
   _incrementDecrementAnimation(double val) {
     print(
@@ -42,11 +44,17 @@ class _NewOrderScreenState extends State<NewOrderScreen> {
   @override
   void didChangeDependencies() {
     _getProductListData(context);
-    if(kTillVal!='')
-      {
-        _getCashRegisterData(context);
-      }
+    if (kTillVal != '') {
+      _getCashRegisterData(context);
+    }
     super.didChangeDependencies();
+  }
+
+  @override
+  void dispose() {
+    _focusNode1.dispose();
+    _focusNode2.dispose();
+    super.dispose();
   }
 
   _getProductListData(BuildContext context) async {
@@ -66,25 +74,23 @@ class _NewOrderScreenState extends State<NewOrderScreen> {
     }
   }
 
-  _getCashRegisterData(BuildContext context)async{
-    if(kEnableCashRegisterVal!='No'&&kEnableCashRegisterVal!='')
-      {
-        setState(()=>_isLoading=true);
-        try{
-          CashRegisterModel? cashRegisterModel = await getCashRegisterData(tillCode: kTillVal);
-          if(cashRegisterModel==null)
-            {
-              throw CustomException('Something went wrong try again later');
-            }
-            cashRegisterNumber = cashRegisterModel.data?.cashRegisterNumber;
-        }catch(e){
-          if(context.mounted)
-            {
-              showErrorAlertDialog(context: context, message: e.toString());
-            }
+  _getCashRegisterData(BuildContext context) async {
+    if (kEnableCashRegisterVal != 'No' && kEnableCashRegisterVal != '') {
+      setState(() => _isLoading = true);
+      try {
+        CashRegisterModel? cashRegisterModel =
+            await getCashRegisterData(tillCode: kTillVal);
+        if (cashRegisterModel == null) {
+          throw CustomException('Something went wrong try again later');
         }
-        setState(()=>_isLoading=false);
+        cashRegisterNumber = cashRegisterModel.data?.cashRegisterNumber;
+      } catch (e) {
+        if (context.mounted) {
+          showErrorAlertDialog(context: context, message: e.toString());
+        }
       }
+      setState(() => _isLoading = false);
+    }
   }
 
   _postOrderKotData(List<ProductList> cartListValues) async {
@@ -94,7 +100,7 @@ class _NewOrderScreenState extends State<NewOrderScreen> {
     }
     await postOrderKotData(
         newOrderKotModel: NewOrderKotModel(
-          shiftRegisterNumber: shiftRegisterNumber,
+            shiftRegisterNumber: shiftRegisterNumber,
             cashRegisterNumber: cashRegisterNumber,
             mobile: customerMobileNumber,
             email: customerEmailId,
@@ -190,14 +196,90 @@ class _NewOrderScreenState extends State<NewOrderScreen> {
                                                 horizontal: 10.0, vertical: 2),
                                             child: Row(
                                               children: [
-                                                SizedBox(
-                                                    width:
-                                                        MediaQuery.of(context)
-                                                                .size
-                                                                .width *
-                                                            0.4,
-                                                    child: Text(
-                                                        '${provider.cartList[index].productName}')),
+                                                GestureDetector(
+                                                  onTap: () {
+                                                    showDialog(
+                                                        context: context,
+                                                        builder: (context) {
+                                                          return Dialog(
+                                                            child: Padding(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                      .all(
+                                                                      20.0),
+                                                              child: Column(
+                                                                crossAxisAlignment:
+                                                                    CrossAxisAlignment
+                                                                        .start,
+                                                                children: [
+                                                                  Text(provider
+                                                                          .cartList[
+                                                                              index]
+                                                                          .productName ??
+                                                                      ''),
+                                                                  Padding(
+                                                                    padding: const EdgeInsets
+                                                                        .symmetric(
+                                                                        vertical:
+                                                                            10.0),
+                                                                    child:
+                                                                        TextField(
+                                                                      decoration:
+                                                                          InputDecoration(
+                                                                        border:
+                                                                            _addNoteTextFieldBorder(),
+                                                                        enabledBorder:
+                                                                            _addNoteTextFieldBorder(),
+                                                                        focusedBorder:
+                                                                            _addNoteTextFieldBorder(),
+                                                                        disabledBorder:
+                                                                            _addNoteTextFieldBorder(),
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                  Padding(
+                                                                    padding: const EdgeInsets
+                                                                        .symmetric(
+                                                                        vertical:
+                                                                            10.0),
+                                                                    child:
+                                                                        TextField(
+                                                                      decoration:
+                                                                          InputDecoration(
+                                                                        border:
+                                                                            _addNoteTextFieldBorder(),
+                                                                        enabledBorder:
+                                                                            _addNoteTextFieldBorder(),
+                                                                        focusedBorder:
+                                                                            _addNoteTextFieldBorder(),
+                                                                        disabledBorder:
+                                                                            _addNoteTextFieldBorder(),
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                  const SizedBox(height: 10),
+                                                                  AddNotesRowWidget(v1: '1', v2: '2', v3: '3', onTap1: () {
+
+                                                                  }, onTap2: () {  }, onTap3: () {  },),
+                                                                  const SizedBox(height: 10),
+                                                                  AddNotesRowWidget(v1: '4', v2: '5', v3: '6', onTap1: () {  }, onTap2: () {  }, onTap3: () {  },),
+                                                                  const SizedBox(height: 10),
+                                                                  AddNotesRowWidget(v1: '7', v2: '8', v3: '9', onTap1: () {  }, onTap2: () {  }, onTap3: () {  },),
+                                                                ],
+                                                              ),
+                                                            ),
+                                                          );
+                                                        });
+                                                  },
+                                                  child: SizedBox(
+                                                      width:
+                                                          MediaQuery.of(context)
+                                                                  .size
+                                                                  .width *
+                                                              0.4,
+                                                      child: Text(
+                                                          '${provider.cartList[index].productName}')),
+                                                ),
                                                 Expanded(
                                                   child: Row(
                                                     children: [
@@ -299,10 +381,15 @@ class _NewOrderScreenState extends State<NewOrderScreen> {
                                                       MainAxisAlignment.end,
                                                   children: [
                                                     Text(
-                                                      'Veg only',
+                                                      vegOnlySwitchStatus
+                                                          ? 'Veg only'
+                                                          : 'Non Veg',
                                                       style: TextStyle(
-                                                          color: Colors
-                                                              .grey.shade700,
+                                                          color:
+                                                              vegOnlySwitchStatus
+                                                                  ? Colors.green
+                                                                  : Colors.red,
+                                                          //Colors.grey.shade700,
                                                           fontWeight:
                                                               FontWeight.bold,
                                                           fontSize: 18),
@@ -313,6 +400,10 @@ class _NewOrderScreenState extends State<NewOrderScreen> {
                                                     Switch(
                                                         activeColor:
                                                             Colors.green,
+                                                        inactiveThumbColor:
+                                                            Colors.red,
+                                                        inactiveTrackColor:
+                                                            Colors.red.shade100,
                                                         value:
                                                             vegOnlySwitchStatus,
                                                         onChanged: (s) {
@@ -390,10 +481,12 @@ class _NewOrderScreenState extends State<NewOrderScreen> {
                                                       ),
                                                     ),
                                                     const SizedBox(width: 10),
-                                                    const Expanded(
+                                                    Expanded(
                                                       child: TextField(
+                                                        onChanged: provider
+                                                            .filterSearchValues,
                                                         decoration:
-                                                            InputDecoration(
+                                                            const InputDecoration(
                                                                 border:
                                                                     InputBorder
                                                                         .none,
@@ -407,9 +500,8 @@ class _NewOrderScreenState extends State<NewOrderScreen> {
                                               Expanded(
                                                 child: ListView.builder(
                                                     itemCount: provider
-                                                        .categoryMap[
-                                                            selectedCategoryType]
-                                                        ?.length,
+                                                        .filteredValues.length,
+                                                    // itemCount: provider.categoryMap[selectedCategoryType]?.length,
                                                     itemBuilder:
                                                         (context, index) {
                                                       return Column(
@@ -432,9 +524,9 @@ class _NewOrderScreenState extends State<NewOrderScreen> {
                                                                           bottom:
                                                                               10,
                                                                         ),
-                                                                        padding:
-                                                                            const EdgeInsets.all(
-                                                                                2),
+                                                                        padding: const EdgeInsets
+                                                                            .all(
+                                                                            2),
                                                                         decoration:
                                                                             BoxDecoration(border: Border.all(color: Colors.green)),
                                                                         child: const Center(
@@ -447,9 +539,9 @@ class _NewOrderScreenState extends State<NewOrderScreen> {
                                                                               12,
                                                                         ))),
                                                                     Container(
-                                                                        padding:
-                                                                            const EdgeInsets.all(
-                                                                                2),
+                                                                        padding: const EdgeInsets
+                                                                            .all(
+                                                                            2),
                                                                         decoration: BoxDecoration(
                                                                             color: Colors
                                                                                 .teal.shade200,
@@ -467,43 +559,68 @@ class _NewOrderScreenState extends State<NewOrderScreen> {
                                                                 const SizedBox(
                                                                     width: 15),
                                                                 Expanded(
+                                                                    flex: 3,
                                                                     child: Text(
-                                                                        '${provider.categoryMap[selectedCategoryType]?[index].productName}',
+                                                                        '${provider.filteredValues[index].productName}',
                                                                         style: TextStyle(
                                                                             color:
                                                                                 Colors.grey.shade600,
-                                                                            fontSize: 16))),
-                                                                Column(
-                                                                  children: [
-                                                                    Text(
-                                                                        '$rupeeSymbol${double.parse(provider.categoryMap[selectedCategoryType]?[index].purchasePrice ?? '0.0')}',
-                                                                        style: const TextStyle(
-                                                                            fontSize:
-                                                                                16,
-                                                                            fontWeight:
-                                                                                FontWeight.w700)),
-                                                                    ElevatedButton(
-                                                                        style: ButtonStyle(
-                                                                            backgroundColor: WidgetStateProperty.all<Color?>(
-                                                                                appThemeColor),
-                                                                            foregroundColor: WidgetStateProperty.all<Color?>(Colors
-                                                                                .white)),
-                                                                        onPressed:
-                                                                            () {
-                                                                          provider
-                                                                              .addToCart(provider.categoryMap[selectedCategoryType]![index]);
-                                                                        },
-                                                                        child:
-                                                                            const Row(
-                                                                          children: [
-                                                                            Text('Add  '),
-                                                                            Icon(
-                                                                              Icons.add,
-                                                                              size: 30,
-                                                                            )
-                                                                          ],
-                                                                        ))
-                                                                  ],
+                                                                            fontSize: 18))),
+                                                                // Text('${provider.categoryMap[selectedCategoryType]?[index].productName}', style: TextStyle(color: Colors.grey.shade600, fontSize: 16))),
+                                                                Expanded(
+                                                                  flex: 2,
+                                                                  child: Column(
+                                                                    children: [
+                                                                      Text(
+                                                                          '$rupeeSymbol${double.parse(provider.filteredValues[index].purchasePrice ?? '0.0')}',
+                                                                          style: const TextStyle(
+                                                                              fontSize: 16,
+                                                                              fontWeight: FontWeight.w700)),
+                                                                      Row(
+                                                                        children: [
+                                                                          CartAddRemoveWidget(
+                                                                            iconData:
+                                                                                Icons.remove,
+                                                                            onTap: provider.filteredValues[index].quantity > 0
+                                                                                ? () {
+                                                                                    provider.removeFromCart(provider.filteredValues[index]);
+                                                                                  }
+                                                                                : () {},
+                                                                          ),
+                                                                          Expanded(
+                                                                              child: Text(textAlign: TextAlign.center, '${provider.filteredValues[index].quantity}', maxLines: 1)),
+                                                                          CartAddRemoveWidget(
+                                                                            iconData:
+                                                                                Icons.add,
+                                                                            onTap:
+                                                                                () {
+                                                                              provider.addToCart(provider.filteredValues[index]);
+                                                                            },
+                                                                          ),
+                                                                        ],
+                                                                      ),
+                                                                      // ElevatedButton(
+                                                                      //     style: ButtonStyle(
+                                                                      //         backgroundColor: WidgetStateProperty.all<Color?>(
+                                                                      //             appThemeColor),
+                                                                      //         foregroundColor: WidgetStateProperty.all<Color?>(Colors
+                                                                      //             .white)),
+                                                                      //     onPressed:
+                                                                      //         () {
+                                                                      //       provider.addToCart(provider.filteredValues[index]);
+                                                                      //     },
+                                                                      //     child:
+                                                                      //         const Row(
+                                                                      //       children: [
+                                                                      //         Text('Add  '),
+                                                                      //         Icon(
+                                                                      //           Icons.add,
+                                                                      //           size: 30,
+                                                                      //         )
+                                                                      //       ],
+                                                                      //     ))
+                                                                    ],
+                                                                  ),
                                                                 )
                                                               ],
                                                             ),
@@ -577,13 +694,14 @@ class _NewOrderScreenState extends State<NewOrderScreen> {
                                                 const RoundedRectangleBorder(
                                                     borderRadius: BorderRadius.all(
                                                         Radius.circular(15))))),
-                                        onPressed: () async{
-                                          if(provider.cartList.isNotEmpty)
-                                            {
-
-                                              _postOrderKotData(provider.cartList);
-                                            }else{
-                                            showCustomAlertDialog(context: context,title: 'Add items to Order');
+                                        onPressed: () async {
+                                          if (provider.cartList.isNotEmpty) {
+                                            _postOrderKotData(
+                                                provider.cartList);
+                                          } else {
+                                            showCustomAlertDialog(
+                                                context: context,
+                                                title: 'Add items to Order');
                                           }
                                         },
                                         child: Text(
@@ -599,101 +717,128 @@ class _NewOrderScreenState extends State<NewOrderScreen> {
                             ],
                           ),
                         ),
-                        kTillVal==""? Stack(
-                          children: [
-                            Container(
-                              height: MediaQuery.of(context).size.height,
-                              width: MediaQuery.of(context).size.width,
-                              color: Colors.black54,
-                            ),
-                            tillBaseModel != null
-                                ? Center(
-                              child: Container(
-                                height: MediaQuery.of(context).size.height * 0.8,
-                                width: MediaQuery.of(context).size.width * 0.8,
-                                padding: const EdgeInsets.all(10),
-                                decoration: const BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius:
-                                  BorderRadius.all(Radius.circular(10)),
-                                ),
-                                child: Material(
-                                  child: Column(
-                                    children: [
-                                      Text('Select your cash register (till)',
-                                          style: TextStyle(
-                                              color: Colors.grey.shade700,
-                                              fontWeight: FontWeight.w600)),
-                                      const Divider(),
-                                      Expanded(
-                                        child: GridView.builder(
-                                            gridDelegate:
-                                            const SliverGridDelegateWithFixedCrossAxisCount(
-                                              crossAxisCount: 2,
-                                              crossAxisSpacing: 10.0,
-                                              mainAxisSpacing: 10.0,
-                                            ),
-                                            itemCount:
-                                            tillBaseModel?.data?.length ?? 0,
-                                            // Total number of items
-                                            itemBuilder: (BuildContext context, int index) {
-                                              return GestureDetector(
-                                                onTap: () {
-                                                  kTillVal = tillBaseModel!
-                                                      .data![index].tillCode ??
-                                                      '';
-                                                  kEnableCashRegisterVal = tillBaseModel!
-                                                      .data![index].enableCashRegister ??
-                                                      '';
-                                                  _getCashRegisterData(context);
-                                                  _saveInSharedPreference();
-                                                },
-                                                child: Container(
-                                                  decoration: BoxDecoration(
-                                                      borderRadius:
-                                                      const BorderRadius.all(
-                                                          Radius.circular(10)),
-                                                      border: Border.all(
-                                                          color:
-                                                          Colors.grey.shade700,
-                                                          style:
-                                                          BorderStyle.solid)),
-                                                  child: Column(
-                                                    mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                    children: [
-                                                      const SizedBox(
-                                                          height: 80,
-                                                          width: 80,
-                                                          child: Image(
-                                                              image: AssetImage(
-                                                                  'assets/images/till_counter_image.png'),
-                                                              fit: BoxFit.fill)),
-                                                      FittedBox(
-                                                          child: Text(
-                                                              '${tillBaseModel!.data?[index].tillCode} / ${tillBaseModel!.data?[index].tillName}',
-                                                              maxLines: 1,
-                                                              style: TextStyle(
-                                                                  color: Colors
-                                                                      .purple
-                                                                      .shade700,
-                                                                  fontWeight:
-                                                                  FontWeight
-                                                                      .w600)))
-                                                    ],
-                                                  ),
-                                                ),
-                                              );
-                                            }),
-                                      ),
-                                    ],
+                        kTillVal == ""
+                            ? Stack(
+                                children: [
+                                  Container(
+                                    height: MediaQuery.of(context).size.height,
+                                    width: MediaQuery.of(context).size.width,
+                                    color: Colors.black54,
                                   ),
-                                ),
-                              ),
-                            )
-                                : const Center(child: CircularProgressIndicator()),
-                          ],
-                        ) : const SizedBox()
+                                  tillBaseModel != null
+                                      ? Center(
+                                          child: Container(
+                                            height: MediaQuery.of(context)
+                                                    .size
+                                                    .height *
+                                                0.8,
+                                            width: MediaQuery.of(context)
+                                                    .size
+                                                    .width *
+                                                0.8,
+                                            padding: const EdgeInsets.all(10),
+                                            decoration: const BoxDecoration(
+                                              color: Colors.white,
+                                              borderRadius: BorderRadius.all(
+                                                  Radius.circular(10)),
+                                            ),
+                                            child: Material(
+                                              child: Column(
+                                                children: [
+                                                  Text(
+                                                      'Select your cash register (till)',
+                                                      style: TextStyle(
+                                                          color: Colors
+                                                              .grey.shade700,
+                                                          fontWeight:
+                                                              FontWeight.w600)),
+                                                  const Divider(),
+                                                  Expanded(
+                                                    child: GridView.builder(
+                                                        gridDelegate:
+                                                            const SliverGridDelegateWithFixedCrossAxisCount(
+                                                          crossAxisCount: 2,
+                                                          crossAxisSpacing:
+                                                              10.0,
+                                                          mainAxisSpacing: 10.0,
+                                                        ),
+                                                        itemCount: tillBaseModel
+                                                                ?.data
+                                                                ?.length ??
+                                                            0,
+                                                        // Total number of items
+                                                        itemBuilder:
+                                                            (BuildContext
+                                                                    context,
+                                                                int index) {
+                                                          return GestureDetector(
+                                                            onTap: () {
+                                                              kTillVal = tillBaseModel!
+                                                                      .data![
+                                                                          index]
+                                                                      .tillCode ??
+                                                                  '';
+                                                              kEnableCashRegisterVal =
+                                                                  tillBaseModel!
+                                                                          .data![
+                                                                              index]
+                                                                          .enableCashRegister ??
+                                                                      '';
+                                                              _getCashRegisterData(
+                                                                  context);
+                                                              _saveInSharedPreference();
+                                                            },
+                                                            child: Container(
+                                                              decoration: BoxDecoration(
+                                                                  borderRadius:
+                                                                      const BorderRadius
+                                                                          .all(
+                                                                          Radius.circular(
+                                                                              10)),
+                                                                  border: Border.all(
+                                                                      color: Colors
+                                                                          .grey
+                                                                          .shade700,
+                                                                      style: BorderStyle
+                                                                          .solid)),
+                                                              child: Column(
+                                                                mainAxisAlignment:
+                                                                    MainAxisAlignment
+                                                                        .center,
+                                                                children: [
+                                                                  const SizedBox(
+                                                                      height:
+                                                                          80,
+                                                                      width: 80,
+                                                                      child: Image(
+                                                                          image: AssetImage(
+                                                                              'assets/images/till_counter_image.png'),
+                                                                          fit: BoxFit
+                                                                              .fill)),
+                                                                  FittedBox(
+                                                                      child: Text(
+                                                                          '${tillBaseModel!.data?[index].tillCode} / ${tillBaseModel!.data?[index].tillName}',
+                                                                          maxLines:
+                                                                              1,
+                                                                          style: TextStyle(
+                                                                              color: Colors.purple.shade700,
+                                                                              fontWeight: FontWeight.w600)))
+                                                                ],
+                                                              ),
+                                                            ),
+                                                          );
+                                                        }),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        )
+                                      : const Center(
+                                          child: CircularProgressIndicator()),
+                                ],
+                              )
+                            : const SizedBox()
                       ],
                     )
                   : const FullScreenLoadingWidget(isLoading: true),
@@ -703,6 +848,71 @@ class _NewOrderScreenState extends State<NewOrderScreen> {
         },
       ),
     ));
+  }
+
+  OutlineInputBorder _addNoteTextFieldBorder() {
+    return const OutlineInputBorder(
+        borderRadius: BorderRadius.all(Radius.circular(5)),
+        borderSide: BorderSide(color: Colors.grey));
+  }
+}
+
+class AddNotesRowWidget extends StatelessWidget {
+  final String v1;
+  final String v2;
+  final String v3;
+  final Function() onTap1;
+  final Function() onTap2;
+  final Function() onTap3;
+
+  const AddNotesRowWidget({
+    super.key,
+    required this.v1,
+    required this.v2,
+    required this.v3,
+    required this.onTap1,
+    required this.onTap2,
+    required this.onTap3,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        AddNotesKeyBordWidget(value: v1, onTap: onTap1),
+        const SizedBox(width: 10),
+        AddNotesKeyBordWidget(value: v2, onTap: onTap2),
+        const SizedBox(width: 10),
+        AddNotesKeyBordWidget(value: v3, onTap: onTap3)
+      ],
+    );
+  }
+}
+
+class AddNotesKeyBordWidget extends StatelessWidget {
+  final String value;
+  final Function() onTap;
+
+  const AddNotesKeyBordWidget({
+    super.key,
+    required this.value,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 7),
+          decoration: BoxDecoration(
+              borderRadius: const BorderRadius.all(Radius.circular(5)),
+              border: Border.all(color: Colors.grey)),
+          child: Center(child: Text(value,style: const TextStyle(fontSize: 16))),
+        ),
+      ),
+    );
   }
 }
 

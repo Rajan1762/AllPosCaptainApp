@@ -22,7 +22,7 @@ class _SettingScreenState extends State<SettingScreen> {
           children: [
             SizedBox(
                 width: MediaQuery.of(context).size.width * 0.45,
-                child: const Image(image: AssetImage('assets/appBarBgImage.png'),fit: BoxFit.fill,)),
+                child: const Image(image: AssetImage(kAppBarBGImage),fit: BoxFit.fill,)),
             const Spacer(),
             const Column(
               crossAxisAlignment: CrossAxisAlignment.end,

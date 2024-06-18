@@ -16,6 +16,8 @@ String? customerAddress;
 PosBaseModel? posBaseModel;
 String? shiftRegisterNumber;
 String? cashRegisterNumber;
+double screenHeight = 0.0;
+double screenWidth = 0.0;
 // List<List<FloorTableModel>> activeFloorTableVal = [];
 // List<List<FloorTableModel>> deActiveFloorTableVal = [];
 
