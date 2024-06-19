@@ -27,6 +27,8 @@ class _NewOrderScreenState extends State<NewOrderScreen> {
   bool _isLoading = false;
   final FocusNode _focusNode1 = FocusNode();
   final FocusNode _focusNode2 = FocusNode();
+  final TextEditingController textEditingController1 = TextEditingController();
+  final TextEditingController textEditingController2 = TextEditingController();
 
   _incrementDecrementAnimation(double val) {
     print(
@@ -204,67 +206,49 @@ class _NewOrderScreenState extends State<NewOrderScreen> {
                                                           return Dialog(
                                                             child: Padding(
                                                               padding:
-                                                                  const EdgeInsets
-                                                                      .all(
-                                                                      20.0),
+                                                                  const EdgeInsets.all(20.0),
                                                               child: Column(
-                                                                crossAxisAlignment:
-                                                                    CrossAxisAlignment
-                                                                        .start,
+                                                                mainAxisSize: MainAxisSize.min,
+                                                                crossAxisAlignment: CrossAxisAlignment.start,
                                                                 children: [
-                                                                  Text(provider
-                                                                          .cartList[
-                                                                              index]
-                                                                          .productName ??
-                                                                      ''),
-                                                                  Padding(
-                                                                    padding: const EdgeInsets
-                                                                        .symmetric(
-                                                                        vertical:
-                                                                            10.0),
-                                                                    child:
-                                                                        TextField(
-                                                                      decoration:
-                                                                          InputDecoration(
-                                                                        border:
-                                                                            _addNoteTextFieldBorder(),
-                                                                        enabledBorder:
-                                                                            _addNoteTextFieldBorder(),
-                                                                        focusedBorder:
-                                                                            _addNoteTextFieldBorder(),
-                                                                        disabledBorder:
-                                                                            _addNoteTextFieldBorder(),
+                                                                  Text(provider.cartList[index].productName ?? ''),
+                                                                  AddNotesTextFieldWidget(focusNode: _focusNode1, controller: textEditingController1,hintText: 'Cooking Notes'),
+                                                                  AddNotesTextFieldWidget(focusNode: _focusNode2, controller: textEditingController2,hintText: 'Quantity'),
+                                                                  const SizedBox(height: 10),
+                                                                  AddNotesRowWidget(v1: '1', v2: '2', v3: '3', onTap1: () {_addNotesOnTapFunction('1');}, onTap2: () {_addNotesOnTapFunction('2');}, onTap3: () {_addNotesOnTapFunction('3');},),
+                                                                  AddNotesRowWidget(v1: '4', v2: '5', v3: '6', onTap1: () {_addNotesOnTapFunction('4');}, onTap2: () {_addNotesOnTapFunction('5');}, onTap3: () {_addNotesOnTapFunction('6');},),
+                                                                  AddNotesRowWidget(v1: '7', v2: '8', v3: '9', onTap1: () {_addNotesOnTapFunction('7');}, onTap2: () {_addNotesOnTapFunction('8');}, onTap3: () {_addNotesOnTapFunction('9');},),
+                                                                  AddNotesRowWidget(v1: 'CLR', v2: '0', v3: '.', onTap1: () {textEditingController1.text = '';textEditingController2.text = '';}, onTap2: () {_addNotesOnTapFunction('0');}, onTap3: () {_addNotesOnTapFunction('.');},),
+                                                                  Row(
+                                                                    children: [
+                                                                      Expanded(
+                                                                        child: Container(
+                                                                          padding: const EdgeInsets.all(10),
+                                                                          decoration: BoxDecoration(
+                                                                            borderRadius: const BorderRadius.all(Radius.circular(5)),
+                                                                            border: Border.all(
+                                                                              color: Colors.red
+                                                                            )
+                                                                          ),
+                                                                          child: const Center(child: Text('CLOSE',style: TextStyle(color: Colors.red,fontWeight: FontWeight.w600),)),
+                                                                        ),
                                                                       ),
-                                                                    ),
-                                                                  ),
-                                                                  Padding(
-                                                                    padding: const EdgeInsets
-                                                                        .symmetric(
-                                                                        vertical:
-                                                                            10.0),
-                                                                    child:
-                                                                        TextField(
-                                                                      decoration:
-                                                                          InputDecoration(
-                                                                        border:
-                                                                            _addNoteTextFieldBorder(),
-                                                                        enabledBorder:
-                                                                            _addNoteTextFieldBorder(),
-                                                                        focusedBorder:
-                                                                            _addNoteTextFieldBorder(),
-                                                                        disabledBorder:
-                                                                            _addNoteTextFieldBorder(),
-                                                                      ),
-                                                                    ),
-                                                                  ),
-                                                                  const SizedBox(height: 10),
-                                                                  AddNotesRowWidget(v1: '1', v2: '2', v3: '3', onTap1: () {
-
-                                                                  }, onTap2: () {  }, onTap3: () {  },),
-                                                                  const SizedBox(height: 10),
-                                                                  AddNotesRowWidget(v1: '4', v2: '5', v3: '6', onTap1: () {  }, onTap2: () {  }, onTap3: () {  },),
-                                                                  const SizedBox(height: 10),
-                                                                  AddNotesRowWidget(v1: '7', v2: '8', v3: '9', onTap1: () {  }, onTap2: () {  }, onTap3: () {  },),
+                                                                      const SizedBox(width: 10),
+                                                                      Expanded(
+                                                                        child: Container(
+                                                                          padding: const EdgeInsets.all(10),
+                                                                          decoration: BoxDecoration(
+                                                                            color: appThemeColor,
+                                                                              borderRadius: const BorderRadius.all(Radius.circular(5)),
+                                                                              // border: Border.all(
+                                                                              //     color: Colors.red
+                                                                              // )
+                                                                          ),
+                                                                          child: const Center(child: Text('CONFIRM',style: TextStyle(color: Colors.white,fontWeight: FontWeight.w600),)),
+                                                                        ),
+                                                                      )
+                                                                    ],
+                                                                  )
                                                                 ],
                                                               ),
                                                             ),
@@ -850,6 +834,49 @@ class _NewOrderScreenState extends State<NewOrderScreen> {
     ));
   }
 
+  void _addNotesOnTapFunction(String s) {
+    print('s = $s');
+    if(_focusNode1.hasFocus)
+      {
+          textEditingController1.text = '${textEditingController1.value.text}$s';
+      }else{
+      textEditingController2.text = '${textEditingController2.value.text}$s';
+    }
+    setState(() {});
+  }
+}
+
+class AddNotesTextFieldWidget extends StatelessWidget {
+  final FocusNode focusNode;
+  final TextEditingController controller;
+  final String? hintText;
+  const AddNotesTextFieldWidget({super.key,
+    required this.focusNode, required this.controller, this.hintText,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10.0),
+      child: TextField(
+        focusNode: focusNode,
+        controller: controller,
+        keyboardType: TextInputType.none,
+        // readOnly: true,
+        decoration: _addNoteFieldDecoration(hintText: hintText),
+      ),
+    );
+  }
+  InputDecoration _addNoteFieldDecoration({String? hintText}) {
+    return InputDecoration(
+      hintText: hintText,
+      border: _addNoteTextFieldBorder(),
+      enabledBorder: _addNoteTextFieldBorder(),
+      focusedBorder: _addNoteTextFieldBorder(),
+      disabledBorder: _addNoteTextFieldBorder(),
+    );
+  }
+
   OutlineInputBorder _addNoteTextFieldBorder() {
     return const OutlineInputBorder(
         borderRadius: BorderRadius.all(Radius.circular(5)),
@@ -877,14 +904,17 @@ class AddNotesRowWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        AddNotesKeyBordWidget(value: v1, onTap: onTap1),
-        const SizedBox(width: 10),
-        AddNotesKeyBordWidget(value: v2, onTap: onTap2),
-        const SizedBox(width: 10),
-        AddNotesKeyBordWidget(value: v3, onTap: onTap3)
-      ],
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10.0),
+      child: Row(
+        children: [
+          AddNotesKeyBordWidget(value: v1, onTap: onTap1),
+          const SizedBox(width: 10),
+          AddNotesKeyBordWidget(value: v2, onTap: onTap2),
+          const SizedBox(width: 10),
+          AddNotesKeyBordWidget(value: v3, onTap: onTap3)
+        ],
+      ),
     );
   }
 }
@@ -962,7 +992,7 @@ class CartAddRemoveWidget extends StatelessWidget {
             color: iconData == Icons.remove
                 ? Colors.red.shade100
                 : Colors.greenAccent.shade100,
-            borderRadius: BorderRadius.all(Radius.circular(18))),
+            borderRadius: const BorderRadius.all(Radius.circular(18))),
         child: Center(
             child: Icon(iconData,
                 color: iconData == Icons.remove ? Colors.red : Colors.green)),
