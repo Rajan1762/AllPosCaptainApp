@@ -18,16 +18,17 @@ class _SettingScreenState extends State<SettingScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+          automaticallyImplyLeading : false,
         title: Row(
           children: [
             SizedBox(
                 width: MediaQuery.of(context).size.width * 0.45,
-                child: const Image(image: AssetImage(kAppBarBGImage),fit: BoxFit.fill,)),
+                child: const Image(image: AssetImage(kAppBarBGImage))),
             const Spacer(),
             const Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                Text('Jayaraj J', style: TextStyle(fontWeight: FontWeight.bold,fontSize: 16)),
+                Text('Rajan D', style: TextStyle(fontWeight: FontWeight.bold,fontSize: 16)),
                 Text('Admin', style: TextStyle(fontSize: 14))
               ],
             )
@@ -65,28 +66,28 @@ class _SettingScreenState extends State<SettingScreen> {
             }),
             const SettingFiledWidget(leadingIcon: Icons.sync, title: 'Sync masters'),
             SettingFiledWidget(leadingIcon: Icons.pin_end, title: 'Show prices',trailingWidget: Switch(
-                activeColor: Colors.orange,
+                activeColor: appThemeColor,
                 value: showPriceSwitch, onChanged: (value){
               setState(() {
                 showPriceSwitch = value;
               });
             })),
             SettingFiledWidget(leadingIcon: Icons.sticky_note_2_rounded, title: 'Show Categories',trailingWidget: Switch(
-                activeColor: Colors.orange,
+                activeColor: appThemeColor,
                 value: showPriceSwitch, onChanged: (value){
               setState(() {
                 showPriceSwitch = value;
               });
             })),
             SettingFiledWidget(leadingIcon: Icons.type_specimen_outlined, title: 'Show types',trailingWidget: Switch(
-                activeColor: Colors.orange,
+                activeColor: appThemeColor,
                 value: showPriceSwitch, onChanged: (value){
               setState(() {
                 showPriceSwitch = value;
               });
             })),
             SettingFiledWidget(leadingIcon: Icons.event_note, title: 'Product list view in POS',trailingWidget: Switch(
-                activeColor: Colors.orange,
+                activeColor: appThemeColor,
                 value: showPriceSwitch, onChanged: (value){
               setState(() {
                 showPriceSwitch = value;
@@ -290,9 +291,9 @@ class SettingChangePinBtWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return ElevatedButton(
       style: ButtonStyle(
-        side: title == 'LOGOUT' ? WidgetStateProperty.all(const BorderSide(color: Colors.orange, width: 2)) : null,
+        side: title == 'LOGOUT' ? WidgetStateProperty.all(BorderSide(color: appThemeColor, width: 2)) : null,
         backgroundColor: WidgetStateProperty.all<Color?>(title != 'LOGOUT' ? appThemeColor : scaffoldBgColor),
-        foregroundColor: WidgetStateProperty.all<Color?>(title != 'LOGOUT' ? Colors.white : Colors.orange),
+        foregroundColor: WidgetStateProperty.all<Color?>(title != 'LOGOUT' ? Colors.white : appThemeColor),
       ),
         onPressed: (){}, child: Text(title,style: const TextStyle(fontSize: 16,fontWeight: FontWeight.w600)));
   }

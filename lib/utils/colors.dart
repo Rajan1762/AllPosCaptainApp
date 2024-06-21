@@ -9,6 +9,8 @@ Color appThemeColorShade600 = const Color.fromRGBO(90, 10, 69,0.6);
 Color appThemeColorShade700 = const Color.fromRGBO(90, 10, 69,0.7);
 Color appThemeColorShade800 = const Color.fromRGBO(90, 10, 69,0.8);
 Color appThemeColorShade900 = const Color.fromRGBO(90, 10, 69,0.9);
-Color appComboColor = Colors.blueAccent.shade700;
+Color appComboColor = const Color.fromRGBO(90, 10, 69,1);
 Color scaffoldBgColor = Colors.grey.shade200;
+Color overlayColor = Colors.orange;
+Color tableStatusFreeColor = Colors.green.shade300;
 

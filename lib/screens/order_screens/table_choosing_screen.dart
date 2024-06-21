@@ -185,7 +185,7 @@ class _TableChoosingScreenScreenState extends State<TableChoosingScreenScreen> {
                                 width: double.infinity,
                                 padding: const EdgeInsets.symmetric(vertical: 10),
                                 decoration: BoxDecoration(
-                                    color: appComboColor,
+                                    color: floorTableProvider.selectedFloorTableList[index].availableStatus == 'Free' ? tableStatusFreeColor : appThemeColor,
                                     borderRadius: const BorderRadius.only(bottomLeft: Radius.circular(20),bottomRight: Radius.circular(20))
                                 ),
                                 child: Center(child: Text('${floorTableProvider.selectedFloorTableList[index].availableStatus}'.toUpperCase(),style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold))),

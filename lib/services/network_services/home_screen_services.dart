@@ -57,6 +57,7 @@ Future<ErrorResponseModel> getTillData() async{
   try{
     var response = await http.get(Uri.parse(tillListUrl),headers: {'OID': kOrganizationCodeVal,'EID': kEmployeeCodeVal,'Authorization': 'Bearer $kAuthTokenVal'});
     print("getTillData status code = ${response.statusCode}\nbody = ${response.body}");
+    
     errorResponseModel =  response.statusCode == 401 || (response.statusCode != 200 || response.body.isEmpty)
         ? ErrorResponseModel(obj: null, errorMessage: kSessionTimeOutTitle)
         : ErrorResponseModel(obj: TillBaseModel.fromJson(json.decode(response.body)), errorMessage: null);

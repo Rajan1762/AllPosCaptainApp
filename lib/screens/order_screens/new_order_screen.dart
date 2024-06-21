@@ -204,6 +204,9 @@ class _NewOrderScreenState extends State<NewOrderScreen> {
                                                         context: context,
                                                         builder: (context) {
                                                           return Dialog(
+                                                            shape: RoundedRectangleBorder(
+                                                              borderRadius: BorderRadius.circular(5),
+                                                            ),
                                                             child: Padding(
                                                               padding:
                                                                   const EdgeInsets.all(20.0),
@@ -211,8 +214,32 @@ class _NewOrderScreenState extends State<NewOrderScreen> {
                                                                 mainAxisSize: MainAxisSize.min,
                                                                 crossAxisAlignment: CrossAxisAlignment.start,
                                                                 children: [
-                                                                  Text(provider.cartList[index].productName ?? ''),
-                                                                  AddNotesTextFieldWidget(focusNode: _focusNode1, controller: textEditingController1,hintText: 'Cooking Notes'),
+                                                                  Text(provider.cartList[index].productName ?? '',style: const TextStyle(fontSize: 16)),
+                                                                  GestureDetector(
+                                                                    onTap: (){
+                                                                      print('object');
+                                                                      showDialog(context: context, builder: (context){
+                                                                        return Dialog(
+                                                                          shape: RoundedRectangleBorder(
+                                                                            borderRadius: BorderRadius.circular(5),
+                                                                          ),
+                                                                          child: Column(
+                                                                            mainAxisSize: MainAxisSize.min,
+                                                                            children: [
+                                                                              TextField(
+                                                                                decoration: InputDecoration(
+                                                                                  border: _addExtraNoteFieldBorder(),
+                                                                                  enabledBorder: _addExtraNoteFieldBorder(),
+                                                                                  focusedBorder: _addExtraNoteFieldBorder(),
+                                                                                  errorBorder: _addExtraNoteFieldBorder()
+                                                                                ),
+                                                                              )
+                                                                            ],
+                                                                          ),
+                                                                        );
+                                                                      });
+                                                                    },
+                                                                      child: AddNotesTextFieldWidget(focusNode: _focusNode1, controller: textEditingController1,hintText: 'Cooking Notes')),
                                                                   AddNotesTextFieldWidget(focusNode: _focusNode2, controller: textEditingController2,hintText: 'Quantity'),
                                                                   const SizedBox(height: 10),
                                                                   AddNotesRowWidget(v1: '1', v2: '2', v3: '3', onTap1: () {_addNotesOnTapFunction('1');}, onTap2: () {_addNotesOnTapFunction('2');}, onTap3: () {_addNotesOnTapFunction('3');},),
@@ -222,15 +249,20 @@ class _NewOrderScreenState extends State<NewOrderScreen> {
                                                                   Row(
                                                                     children: [
                                                                       Expanded(
-                                                                        child: Container(
-                                                                          padding: const EdgeInsets.all(10),
-                                                                          decoration: BoxDecoration(
-                                                                            borderRadius: const BorderRadius.all(Radius.circular(5)),
-                                                                            border: Border.all(
-                                                                              color: Colors.red
-                                                                            )
+                                                                        child: GestureDetector(
+                                                                          onTap: (){
+                                                                            Navigator.of(context).pop();
+                                                                          },
+                                                                          child: Container(
+                                                                            padding: const EdgeInsets.all(10),
+                                                                            decoration: BoxDecoration(
+                                                                              borderRadius: const BorderRadius.all(Radius.circular(5)),
+                                                                              border: Border.all(
+                                                                                color: Colors.red
+                                                                              )
+                                                                            ),
+                                                                            child: const Center(child: Text('CLOSE',style: TextStyle(color: Colors.red,fontWeight: FontWeight.w600),)),
                                                                           ),
-                                                                          child: const Center(child: Text('CLOSE',style: TextStyle(color: Colors.red,fontWeight: FontWeight.w600),)),
                                                                         ),
                                                                       ),
                                                                       const SizedBox(width: 10),
@@ -426,8 +458,7 @@ class _NewOrderScreenState extends State<NewOrderScreen> {
                                                                 .symmetric(
                                                                 horizontal: 10),
                                                         decoration: BoxDecoration(
-                                                            color: Colors
-                                                                .teal.shade200,
+                                                            color: appThemeColorShade200,
                                                             borderRadius:
                                                                 const BorderRadius
                                                                     .all(
@@ -653,7 +684,7 @@ class _NewOrderScreenState extends State<NewOrderScreen> {
                               Container(
                                 height: 80,
                                 width: MediaQuery.of(context).size.width,
-                                color: Colors.orange,
+                                color: appThemeColor,
                                 child: Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceAround,
@@ -677,7 +708,7 @@ class _NewOrderScreenState extends State<NewOrderScreen> {
                                                     OutlinedBorder?>(
                                                 const RoundedRectangleBorder(
                                                     borderRadius: BorderRadius.all(
-                                                        Radius.circular(15))))),
+                                                        Radius.circular(40))))),
                                         onPressed: () async {
                                           if (provider.cartList.isNotEmpty) {
                                             _postOrderKotData(
@@ -832,6 +863,12 @@ class _NewOrderScreenState extends State<NewOrderScreen> {
         },
       ),
     ));
+  }
+
+  OutlineInputBorder _addExtraNoteFieldBorder() {
+    return const OutlineInputBorder(
+        borderRadius: BorderRadius.all(Radius.circular(5)),
+        borderSide: BorderSide(color: Colors.grey));
   }
 
   void _addNotesOnTapFunction(String s) {

@@ -52,7 +52,7 @@ class _ListScreenState extends State<ListScreen> {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: Text('OrderList Screen'),
+        title: const Text('OrderList Screen'),
       ),
       body: Container(
         color: Colors.grey.shade100,
@@ -120,56 +120,24 @@ class _ListScreenState extends State<ListScreen> {
                                     fontSize: 16,
                                     fontWeight: FontWeight.w600)),
                           ),
-                          Expanded(
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                GestureDetector(
-                                  onTap: (){
-                                    Navigator.of(context).push(MaterialPageRoute(builder: (context)=> TableChoosingScreenScreen(orderDataModel: orderProvider.orderDataModelList?[index])));
-                                  },
-                                  child: const OrderFieldIconWideget(
-                                      iconData: Icons.table_bar_outlined),
+                          GestureDetector(
+                            onTap: (){
+                              Navigator.of(context).push(MaterialPageRoute(builder: (context)=> TableChoosingScreenScreen(orderDataModel: orderProvider.orderDataModelList?[index])));
+                            },
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(vertical: 5,horizontal: 10),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: const BorderRadius.all(Radius.circular(30)),
+                                  border: Border.all(color: appThemeColor),
+                                  boxShadow: const [
+                                    BoxShadow(
+                                      color: Colors.grey,
+                                      blurRadius: 3
+                                    )
+                                  ]
                                 ),
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 5.0),
-                                  child: FittedBox(
-                                    child: Text(
-                                        '${orderProvider.orderDataModelList?[index].floorName ?? '_'} / ${orderProvider.orderDataModelList?[index].tableName ?? '_'}',
-                                        style: TextStyle(
-                                            color: Colors.grey.shade800,
-                                            fontSize: 16)),
-                                  ),
-                                ),
-                                GestureDetector(
-                                    onTap: () {
-                                      if (('${orderProvider.orderDataModelList?[index].floorName ?? '_'} / ${orderProvider.orderDataModelList?[index].tableName ?? '_'}' ==
-                                          '_ / _')) {
-                                        //TODO
-                                        Navigator.of(context).push(
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    TableChoosingScreenScreen(
-                                                        orderDataModel:
-                                                        orderProvider
-                                                            .orderDataModelList?[
-                                                        index])));
-                                      } else {
-                                        orderProvider.removeOrderFloorTable(
-                                            orderDataModel: orderProvider
-                                                .orderDataModelList![index]);
-                                      }
-                                    },
-                                    child: OrderFieldIconWideget(
-                                        iconData:
-                                        ('${orderProvider.orderDataModelList?[index].floorName ?? '_'} / ${orderProvider.orderDataModelList?[index].tableName ?? '_'}' ==
-                                            '_ / _')
-                                            ? Icons.edit
-                                            : Icons.delete_forever)),
-                              ],
-                            ),
-                          )
+                                  child: Text((orderProvider.orderDataModelList?[index].floorName == '_' || orderProvider.orderDataModelList?[index].tableName == '_') ?  'Choose Table': '${orderProvider.orderDataModelList?[index].floorName} / ${orderProvider.orderDataModelList?[index].tableName}',textAlign: TextAlign.end,style: const TextStyle(fontWeight: FontWeight.w600))))
                         ],
                       ),
                       Padding(
@@ -183,43 +151,24 @@ class _ListScreenState extends State<ListScreen> {
                                     color: Colors.green,
                                     fontSize: 16,
                                     fontWeight: FontWeight.w600)),
-                            Expanded(
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: [
-                                  const OrderFieldIconWideget(
-                                      iconData: Icons.person_outline),
-                                  Flexible(
-                                    child: Text(
-                                        '${orderProvider.orderDataModelList?[index].ledgerName ?? '_'} / ${orderProvider.orderDataModelList?[index].mobile ?? '_'}',
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: TextStyle(
-                                            color: Colors.grey.shade800,
-                                            fontSize: 16)),
-                                  ),
-                                  GestureDetector(
-                                      onTap: () async {
-                                        if('${orderProvider.orderDataModelList?[index].ledgerName ?? '_'} / ${orderProvider.orderDataModelList?[index].mobile
-                                            ?? '_'}' ==
-                                            '_ / _')
-                                          {
-                                            Navigator.of(context).push(
-                                                MaterialPageRoute(
-                                                    builder: (context) => CustomerListScreen(orderDataModel: orderProvider.orderDataModelList?[index])));
-                                          }else{
-                                          orderProvider.removeUserData(orderDataModel: orderProvider.orderDataModelList![index]);
-                                        }
-                                      },
-                                      child: OrderFieldIconWideget(
-                                          iconData: ('${orderProvider.orderDataModelList?[index].ledgerName ?? '_'} / ${orderProvider.orderDataModelList?[index].mobile
-                                              ?? '_'}' ==
-                                              '_ / _')
-                                              ? Icons.edit
-                                              : Icons.delete_forever)),
-                                ],
-                              ),
-                            )
+                            GestureDetector(
+                                onTap: (){
+                                  Navigator.of(context).push(MaterialPageRoute(builder: (context) => CustomerListScreen(orderDataModel: orderProvider.orderDataModelList?[index])));
+                                },
+                                child: Container(
+                                    padding: const EdgeInsets.symmetric(vertical: 5,horizontal: 10),
+                                    decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: const BorderRadius.all(Radius.circular(30)),
+                                        border: Border.all(color: appThemeColor),
+                                        boxShadow: const [
+                                          BoxShadow(
+                                              color: Colors.grey,
+                                              blurRadius: 3
+                                          )
+                                        ]
+                                    )
+                                ,child: Text((orderProvider.orderDataModelList?[index].ledgerName == '_' || orderProvider.orderDataModelList?[index].mobile == '_') ?  'Choose Customer': '${orderProvider.orderDataModelList?[index].ledgerName} / ${orderProvider.orderDataModelList?[index].mobile}',textAlign: TextAlign.end,style: const TextStyle(fontWeight: FontWeight.w600))))
                           ],
                         ),
                       ),
@@ -241,10 +190,15 @@ class _ListScreenState extends State<ListScreen> {
                                       EdgeInsetsGeometry?>(
                                       const EdgeInsets.symmetric(
                                           vertical: 10, horizontal: 50)),
+                                  overlayColor: WidgetStateProperty.resolveWith<Color>(
+                                        (Set<WidgetState> states) {
+                                      return overlayColor;
+                                    },
+                                  ),
                                   shape: WidgetStateProperty.all<
                                       OutlinedBorder?>(RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(
-                                        5),
+                                        30),
                                   ))),
                               onPressed: () async {
                                 bool result = await Navigator.of(context).push(MaterialPageRoute(

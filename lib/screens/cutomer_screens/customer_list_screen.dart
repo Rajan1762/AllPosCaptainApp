@@ -12,6 +12,7 @@ import '../../utils/custom_widgets/notification_widget.dart';
 
 class CustomerListScreen extends StatefulWidget {
   final OrderDataModel? orderDataModel;
+
   const CustomerListScreen({super.key, this.orderDataModel});
 
   @override
@@ -30,6 +31,7 @@ class _CustomerListScreenState extends State<CustomerListScreen> {
   StringBuffer state = StringBuffer();
   StringBuffer city = StringBuffer();
   StringBuffer pinCode = StringBuffer();
+
   // List<CustomerData>? _customerList;
   double _animatedHeightValue = 0;
   bool addCustomerStatus = false;
@@ -70,10 +72,12 @@ class _CustomerListScreenState extends State<CustomerListScreen> {
     super.initState();
   }
 
-  Future<void> _selectDate(BuildContext context,bool birthDateStatus) async {
+  Future<void> _selectDate(BuildContext context, bool birthDateStatus) async {
     final DateTime? pickedDate = await showDatePicker(
       context: context,
-      initialDate: birthDateStatus ? (selectedBirthDate ?? DateTime.now()) : (selectedAnniversaryDate ?? DateTime.now()),
+      initialDate: birthDateStatus
+          ? (selectedBirthDate ?? DateTime.now())
+          : (selectedAnniversaryDate ?? DateTime.now()),
       firstDate: DateTime(1920),
       lastDate: DateTime(2101),
     );
@@ -91,20 +95,22 @@ class _CustomerListScreenState extends State<CustomerListScreen> {
       });
     }
   }
-  _openAddCustomerScreen(BuildContext context)
-  {
-    if(_animatedHeightValue > 0)
-      {
-        _animatedHeightValue -= (MediaQuery.of(context).size.height * 0.65).toInt();
-      }else{
-      _animatedHeightValue += (MediaQuery.of(context).size.height * 0.65).toInt();
+
+  _openAddCustomerScreen(BuildContext context) {
+    if (_animatedHeightValue > 0) {
+      _animatedHeightValue -=
+          (MediaQuery.of(context).size.height * 0.65).toInt();
+    } else {
+      _animatedHeightValue +=
+          (MediaQuery.of(context).size.height * 0.65).toInt();
     }
     _clearData();
     setState(() {
       addCustomerStatus = !addCustomerStatus;
     });
   }
-  _clearData(){
+
+  _clearData() {
     _formKey.currentState?.reset();
     customerName.clear();
     phoneNumber.clear();
@@ -130,12 +136,14 @@ class _CustomerListScreenState extends State<CustomerListScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
         child: Stack(
-          children: [
-            Scaffold(
-                  appBar: AppBar(
-            leading: GestureDetector(onTap: (){
-              Navigator.of(context).pop();
-            },child: const Icon(Icons.close)),
+      children: [
+        Scaffold(
+          appBar: AppBar(
+            leading: GestureDetector(
+                onTap: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Icon(Icons.close)),
             title: const Text('Customer'),
             actions: [
               ElevatedButton(
@@ -143,12 +151,18 @@ class _CustomerListScreenState extends State<CustomerListScreen> {
                       padding: WidgetStateProperty.all<EdgeInsetsGeometry?>(
                           const EdgeInsets.symmetric(horizontal: 30)),
                       backgroundColor:
-                          WidgetStateProperty.all<Color?>(Colors.orange.shade800),
-                      foregroundColor:
                           WidgetStateProperty.all<Color?>(Colors.white),
+                      foregroundColor:
+                          WidgetStateProperty.all<Color?>(appThemeColor),
+                      overlayColor: WidgetStateProperty.resolveWith<Color>(
+                        (Set<WidgetState> states) {
+                          return overlayColor;
+                        },
+                      ),
                       shape: WidgetStateProperty.all<OutlinedBorder?>(
                           const RoundedRectangleBorder(
-                              borderRadius: BorderRadius.all(Radius.circular(5))))),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(25))))),
                   onPressed: () {
                     _openAddCustomerScreen(context);
                   },
@@ -157,246 +171,340 @@ class _CustomerListScreenState extends State<CustomerListScreen> {
                 width: 10,
               )
             ],
-                  ),
-                  body: Consumer<ProductProviderService>(
-                    builder: (context, productProvider, _) {
-                      return Column(
-                        children: [
-                          Padding(
-                            padding:
-                            const EdgeInsets.symmetric(vertical: 15.0, horizontal: 20),
-                            child: TextField(
-                              decoration: InputDecoration(
-                                hintText: 'Search',
-                                hintStyle: const TextStyle(color: Colors.grey),
-                                suffixIcon: Icon(Icons.search, color: Colors.grey.shade700),
-                                enabledBorder: _searchFieldBorder(),
-                                focusedBorder: _searchFieldBorder(),
-                              ),
-                            ),
-                          ),
-                          Expanded(
-                              child: FutureBuilder<List<CustomerData>?>(
-                                future: customerListData,
-                                builder: (BuildContext context,
-                                    AsyncSnapshot<List<CustomerData>?> snapshot) {
-                                  if (snapshot.connectionState == ConnectionState.waiting) {
-                                    return const Center(
-                                      child: SizedBox(
-                                          height: 40,
-                                          width: 40,
-                                          child: CircularProgressIndicator(strokeWidth: 6,)),
-                                    );
-                                  } else if (snapshot.hasError) {
-                                    showErrorAlertDialog(
-                                        context: context, message: snapshot.error.toString());
-                                    return Text('Error: ${snapshot.error}');
-                                  } else if (snapshot.hasData) {
-                                    return ListView.builder(
-                                        itemCount: snapshot.data?.length,
-                                        itemBuilder: (context, index) {
-                                          return Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 20.0, vertical: 3),
-                                            child: GestureDetector(
-                                              onTap: () {
-                                                _showCustomerDetailDialog(
-                                                    context: context,
-                                                    name: '${snapshot.data?[index].ledgerName}',
-                                                    phoneNumber:
-                                                    '${snapshot.data?[index].mobile}',
-                                                    email: '${snapshot.data?[index].email}',
-                                                    address:
-                                                    '${snapshot.data?[index].billingAddressLine1}', cancelPressed: () {
-                                                  Navigator.of(context).pop();
-                                                }, addPressed: () {
-                                                  customerMobileNumber = snapshot.data?[index].mobile;
-                                                  customerEmailId = snapshot.data?[index].email;
-                                                  customerLedgerCode = snapshot.data?[index].ledgerCode;
-                                                  customerLedgerName = snapshot.data?[index].ledgerName;
-                                                  customerGSTNumber = snapshot.data?[index].gSTNumber;
-                                                  customerAddress = snapshot.data?[index].billingAddressLine1;
-                                                if(widget.orderDataModel!=null)
-                                                  {
-                                                    productProvider.setSelectUserData(orderDataModel: widget.orderDataModel!, customerData: snapshot.data![index]);
-                                                    Navigator.of(context).pop();
-                                                  }
-                                                Navigator.of(context).pop();
-                                                });
-                                              },
-                                              child: Column(
-                                                children: [
-                                                  Row(
-                                                    children: [
-                                                      Expanded(
-                                                          child: Text(
-                                                            '${snapshot.data?[index].ledgerName}',
-                                                            style: const TextStyle(
-                                                                fontSize: 16,
-                                                                fontWeight: FontWeight.bold),
-                                                          )),
-                                                      Expanded(
-                                                          child: Text(
-                                                            '${snapshot.data?[index].email}',
-                                                            style:
-                                                            const TextStyle(color: Colors.grey),
-                                                            textAlign: TextAlign.end,
-                                                          )),
-                                                    ],
-                                                  ),
-                                                  const SizedBox(
-                                                    height: 5,
-                                                  ),
-                                                  Row(
-                                                    children: [
-                                                      Expanded(
-                                                          child: Text(
-                                                              '${snapshot.data?[index].billingCity}',
-                                                              style: const TextStyle(
-                                                                  color: Colors.grey))),
-                                                      Expanded(
-                                                          child: Text(
-                                                            '${snapshot.data?[index].mobile}',
-                                                            style:
-                                                            const TextStyle(color: Colors.grey),
-                                                            textAlign: TextAlign.end,
-                                                          )),
-                                                    ],
-                                                  ),
-                                                  const SizedBox(
-                                                    height: 5,
-                                                  ),
-                                                  const Divider()
-                                                ],
-                                              ),
-                                            ),
-                                          );
-                                        });
-                                  } else {
-                                    return const Text('No data');
-                                  }
-                                },
-                              ))
-                        ],
-                      );
-                    },
-                  ),
-                ),
-            Visibility(
-              visible: addCustomerStatus,
-              child: Container(
-                color: Colors.black54,
-                height: MediaQuery.of(context).size.height,
-                width: MediaQuery.of(context).size.width,
-              ),
-            ),
-            Positioned(
-              bottom: 0,
-              child: AnimatedContainer(
-                curve: Curves.fastOutSlowIn,
-                duration: const Duration(milliseconds: 500),
-                height: _animatedHeightValue,
-                width: MediaQuery.of(context).size.width,
-                color: Colors.white,
-                child: Scaffold(
-                  body: SingleChildScrollView(
-                    child: Form(
-                      key: _formKey,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            color: Colors.teal.shade600,
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 8.0,horizontal: 15),
-                              child: Row(
-                                children: [
-                                  GestureDetector(
-                                    onTap: (){
-                                      _openAddCustomerScreen(context);
-                                    },
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(left: 5, right: 15),
-                                      child: Icon(Icons.close,color: Colors.grey.shade800),
-                                    ),
-                                  ),
-                                  const Expanded(child: Text('Add Customer',style: TextStyle(color: Colors.white,fontSize: 16))),
-                                  Expanded(
-                                    child: ElevatedButton(
-                                        style: ButtonStyle(
-                                            padding: WidgetStateProperty.all<EdgeInsetsGeometry?>(
-                                                const EdgeInsets.symmetric(horizontal: 30,vertical: 5)),
-                                            backgroundColor:
-                                            WidgetStateProperty.all<Color?>(Colors.orange.shade800),
-                                            foregroundColor:
-                                            WidgetStateProperty.all<Color?>(Colors.white),
-                                            shape: WidgetStateProperty.all<OutlinedBorder?>(
-                                                const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(5))))),
-                                        onPressed: () async {
-                                          setState(()=>_isLoading = true);
-                                          bool result = await _postNewUserData(context);
-                                          _isLoading = false;
-                                          if(context.mounted)
-                                            {
-                                              _openAddCustomerScreen(context);
-                                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(result ? 'User Saved Successfully': 'Something Went Wrong Try Again Later')));
-                                            }
-                                        },
-                                        child: const Text('SAVE')),
-                                  )
-                                ],
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 5),
-                          AddNewScreenFieldWidget(hintText1: 'Customer Name', hintText2: 'TAX/UID Number',
-                            onChanged1: (s) { customerName.clear();customerName.write(s); }, onChanged2: (s) { taxNumber.clear(); taxNumber.write(s); },),
-                          AddNewScreenFieldWidget(hintText1: 'Phone *', hintText2: 'Email',
-                            onChanged1: (s) { phoneNumber.clear();phoneNumber.write(s); }, onChanged2: (s) { emailID.clear();emailID.write(s); },),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 5.0,horizontal: 15),
-                            child: Text('Address',style: TextStyle(
-                              fontSize: 16,
-                              color: appThemeColor,
-                              fontWeight: FontWeight.bold
-                            )),
-                          ),
-                          AddNewScreenFieldWidget(hintText1: 'Address', hintText2: 'City',
-                            onChanged1: (s) { address1.clear();address1.write(s); }, onChanged2: (s) { city.clear(); city.write(s); },),
-                          AddNewScreenFieldWidget(hintText1: 'State', hintText2: 'Pincode',
-                            onChanged1: (s) { state.clear();state.write(s); }, onChanged2: (s) { pinCode.clear(); pinCode.write(s); },),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 5.0,horizontal: 15),
-                            child: Text('Personal details',style: TextStyle(
-                                fontSize: 16,
-                                color: appThemeColor,
-                                fontWeight: FontWeight.bold
-                            )),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 15.0,vertical: 5),
-                            child: Row(
-                              children: [
-                                AddCustomerBirthDateWidget(hintTextValue: 'Birthday', dateValue: selectedBirthDate == null? '' : '${selectedBirthDate?.day}-${selectedBirthDate?.month}-${selectedBirthDate?.year}',
-                                  onTap: () {
-                                  _selectDate(context,true); },),
-                                const SizedBox(width: 15),
-                                AddCustomerBirthDateWidget(hintTextValue: 'Anniversary', dateValue: selectedBirthDate == null? '' : '${selectedBirthDate?.day}-${selectedBirthDate?.month}-${selectedBirthDate?.year}',
-                                  onTap: () { _selectDate(context,false); },)
-                              ],
-                            ),
-                          ),
-                          // const AddNewScreenFieldWidget(hintText1: 'Address', hintText2: 'City'),
-                        ],
+          ),
+          body: Consumer<ProductProviderService>(
+            builder: (context, productProvider, _) {
+              return Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 15.0, horizontal: 20),
+                    child: TextField(
+                      decoration: InputDecoration(
+                        hintText: 'Search',
+                        hintStyle: const TextStyle(color: Colors.grey),
+                        suffixIcon:
+                            Icon(Icons.search, color: Colors.grey.shade700),
+                        enabledBorder: _searchFieldBorder(),
+                        focusedBorder: _searchFieldBorder(),
                       ),
                     ),
                   ),
+                  Expanded(
+                      child: FutureBuilder<List<CustomerData>?>(
+                    future: customerListData,
+                    builder: (BuildContext context,
+                        AsyncSnapshot<List<CustomerData>?> snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(
+                          child: SizedBox(
+                              height: 40,
+                              width: 40,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 6,
+                              )),
+                        );
+                      } else if (snapshot.hasError) {
+                        showErrorAlertDialog(
+                            context: context,
+                            message: snapshot.error.toString());
+                        return Text('Error: ${snapshot.error}');
+                      } else if (snapshot.hasData) {
+                        return ListView.builder(
+                            itemCount: snapshot.data?.length,
+                            itemBuilder: (context, index) {
+                              return Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 20.0, vertical: 3),
+                                child: GestureDetector(
+                                  onTap: () {
+                                    _showCustomerDetailDialog(
+                                        context: context,
+                                        name:
+                                            '${snapshot.data?[index].ledgerName}',
+                                        phoneNumber:
+                                            '${snapshot.data?[index].mobile}',
+                                        email: '${snapshot.data?[index].email}',
+                                        address:
+                                            '${snapshot.data?[index].billingAddressLine1}',
+                                        cancelPressed: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                        addPressed: () {
+                                          customerMobileNumber =
+                                              snapshot.data?[index].mobile;
+                                          customerEmailId =
+                                              snapshot.data?[index].email;
+                                          customerLedgerCode =
+                                              snapshot.data?[index].ledgerCode;
+                                          customerLedgerName =
+                                              snapshot.data?[index].ledgerName;
+                                          customerGSTNumber =
+                                              snapshot.data?[index].gSTNumber;
+                                          customerAddress = snapshot
+                                              .data?[index].billingAddressLine1;
+                                          if (widget.orderDataModel != null) {
+                                            productProvider.setSelectUserData(
+                                                orderDataModel:
+                                                    widget.orderDataModel!,
+                                                customerData:
+                                                    snapshot.data![index]);
+                                            Navigator.of(context).pop();
+                                          }
+                                          Navigator.of(context).pop();
+                                        });
+                                  },
+                                  child: Column(
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Expanded(
+                                              child: Text(
+                                            '${snapshot.data?[index].ledgerName}',
+                                            style: const TextStyle(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.bold),
+                                          )),
+                                          Expanded(
+                                              child: Text(
+                                            '${snapshot.data?[index].email}',
+                                            style: const TextStyle(
+                                                color: Colors.grey),
+                                            textAlign: TextAlign.end,
+                                          )),
+                                        ],
+                                      ),
+                                      const SizedBox(
+                                        height: 5,
+                                      ),
+                                      Row(
+                                        children: [
+                                          Expanded(
+                                              child: Text(
+                                                  '${snapshot.data?[index].billingCity}',
+                                                  style: const TextStyle(
+                                                      color: Colors.grey))),
+                                          Expanded(
+                                              child: Text(
+                                            '${snapshot.data?[index].mobile}',
+                                            style: const TextStyle(
+                                                color: Colors.grey),
+                                            textAlign: TextAlign.end,
+                                          )),
+                                        ],
+                                      ),
+                                      const SizedBox(
+                                        height: 5,
+                                      ),
+                                      const Divider()
+                                    ],
+                                  ),
+                                ),
+                              );
+                            });
+                      } else {
+                        return const Text('No data');
+                      }
+                    },
+                  ))
+                ],
+              );
+            },
+          ),
+        ),
+        Visibility(
+          visible: addCustomerStatus,
+          child: Container(
+            color: Colors.black54,
+            height: MediaQuery.of(context).size.height,
+            width: MediaQuery.of(context).size.width,
+          ),
+        ),
+        Positioned(
+          bottom: 0,
+          child: AnimatedContainer(
+            curve: Curves.fastOutSlowIn,
+            duration: const Duration(milliseconds: 500),
+            height: _animatedHeightValue,
+            width: MediaQuery.of(context).size.width,
+            color: Colors.white,
+            child: Scaffold(
+              body: SingleChildScrollView(
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        color: appThemeColor,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 8.0, horizontal: 15),
+                          child: Row(
+                            children: [
+                              GestureDetector(
+                                onTap: () {
+                                  _openAddCustomerScreen(context);
+                                },
+                                child: const Padding(
+                                  padding: EdgeInsets.only(left: 5, right: 15),
+                                  child: Icon(Icons.close, color: Colors.white),
+                                ),
+                              ),
+                              const Expanded(
+                                  child: Text('Add Customer',
+                                      style: TextStyle(
+                                          color: Colors.white, fontSize: 16))),
+                              Expanded(
+                                child: ElevatedButton(
+                                    style: ButtonStyle(
+                                        padding:
+                                            WidgetStateProperty.all<EdgeInsetsGeometry?>(
+                                                const EdgeInsets.symmetric(
+                                                    horizontal: 30,
+                                                    vertical: 5)),
+                                        backgroundColor:
+                                            WidgetStateProperty.all<Color?>(
+                                                Colors.white),
+                                        foregroundColor:
+                                            WidgetStateProperty.all<Color?>(
+                                                appThemeColor),
+                                        overlayColor: WidgetStateProperty.resolveWith<Color>(
+                                              (Set<WidgetState> states) {
+                                            return overlayColor;
+                                          },
+                                        ),
+                                        shape: WidgetStateProperty.all<OutlinedBorder?>(
+                                            const RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.all(Radius.circular(25))))),
+                                    onPressed: () async {
+                                      setState(() => _isLoading = true);
+                                      bool result =
+                                          await _postNewUserData(context);
+                                      _isLoading = false;
+                                      if (context.mounted) {
+                                        _openAddCustomerScreen(context);
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(SnackBar(
+                                                content: Text(result
+                                                    ? 'User Saved Successfully'
+                                                    : 'Something Went Wrong Try Again Later')));
+                                      }
+                                    },
+                                    child: const Text('SAVE')),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 5),
+                      AddNewScreenFieldWidget(
+                        hintText1: 'Customer Name',
+                        hintText2: 'TAX/UID Number',
+                        onChanged1: (s) {
+                          customerName.clear();
+                          customerName.write(s);
+                        },
+                        onChanged2: (s) {
+                          taxNumber.clear();
+                          taxNumber.write(s);
+                        },
+                      ),
+                      AddNewScreenFieldWidget(
+                        hintText1: 'Phone *',
+                        hintText2: 'Email',
+                        onChanged1: (s) {
+                          phoneNumber.clear();
+                          phoneNumber.write(s);
+                        },
+                        onChanged2: (s) {
+                          emailID.clear();
+                          emailID.write(s);
+                        },
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 5.0, horizontal: 15),
+                        child: Text('Address',
+                            style: TextStyle(
+                                fontSize: 16,
+                                color: appThemeColor,
+                                fontWeight: FontWeight.bold)),
+                      ),
+                      AddNewScreenFieldWidget(
+                        hintText1: 'Address',
+                        hintText2: 'City',
+                        onChanged1: (s) {
+                          address1.clear();
+                          address1.write(s);
+                        },
+                        onChanged2: (s) {
+                          city.clear();
+                          city.write(s);
+                        },
+                      ),
+                      AddNewScreenFieldWidget(
+                        hintText1: 'State',
+                        hintText2: 'Pincode',
+                        onChanged1: (s) {
+                          state.clear();
+                          state.write(s);
+                        },
+                        onChanged2: (s) {
+                          pinCode.clear();
+                          pinCode.write(s);
+                        },
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 5.0, horizontal: 15),
+                        child: Text('Personal details',
+                            style: TextStyle(
+                                fontSize: 16,
+                                color: appThemeColor,
+                                fontWeight: FontWeight.bold)),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 15.0, vertical: 5),
+                        child: Row(
+                          children: [
+                            AddCustomerBirthDateWidget(
+                              hintTextValue: 'Birthday',
+                              dateValue: selectedBirthDate == null
+                                  ? ''
+                                  : '${selectedBirthDate?.day}-${selectedBirthDate?.month}-${selectedBirthDate?.year}',
+                              onTap: () {
+                                _selectDate(context, true);
+                              },
+                            ),
+                            const SizedBox(width: 15),
+                            AddCustomerBirthDateWidget(
+                              hintTextValue: 'Anniversary',
+                              dateValue: selectedBirthDate == null
+                                  ? ''
+                                  : '${selectedBirthDate?.day}-${selectedBirthDate?.month}-${selectedBirthDate?.year}',
+                              onTap: () {
+                                _selectDate(context, false);
+                              },
+                            )
+                          ],
+                        ),
+                      ),
+                      // const AddNewScreenFieldWidget(hintText1: 'Address', hintText2: 'City'),
+                    ],
+                  ),
                 ),
               ),
             ),
-            FullScreenLoadingWidget(isLoading: _isLoading,),
-          ],
-        ));
+          ),
+        ),
+        FullScreenLoadingWidget(
+          isLoading: _isLoading,
+        ),
+      ],
+    ));
   }
 
   _showCustomerDetailDialog(
@@ -404,7 +512,9 @@ class _CustomerListScreenState extends State<CustomerListScreen> {
       required String name,
       required String phoneNumber,
       required String email,
-      required String address,required Function() cancelPressed,required Function() addPressed}) {
+      required String address,
+      required Function() cancelPressed,
+      required Function() addPressed}) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -446,8 +556,12 @@ class AddCustomerBirthDateWidget extends StatelessWidget {
   final String hintTextValue;
   final String dateValue;
   final Function() onTap;
+
   const AddCustomerBirthDateWidget({
-    super.key, required this.hintTextValue, required this.dateValue, required this.onTap,
+    super.key,
+    required this.hintTextValue,
+    required this.dateValue,
+    required this.onTap,
   });
 
   @override
@@ -470,13 +584,18 @@ class AddCustomerBirthDateWidget extends StatelessWidget {
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(hintTextValue,style: TextStyle(color: Colors.grey,fontWeight: FontWeight.w600,fontSize: dateValue =='' ? 16 : 10)),
-                    Visibility(
-                      visible:  dateValue !='',
-                        child: Text(dateValue))
+                    Text(hintTextValue,
+                        style: TextStyle(
+                            color: Colors.grey,
+                            fontWeight: FontWeight.w600,
+                            fontSize: dateValue == '' ? 16 : 10)),
+                    Visibility(visible: dateValue != '', child: Text(dateValue))
                   ],
                 ),
-                Icon(Icons.calendar_month_outlined,color: Colors.grey.shade600,)
+                Icon(
+                  Icons.calendar_month_outlined,
+                  color: Colors.grey.shade600,
+                )
               ],
             ),
           ),
@@ -494,8 +613,13 @@ class AddNewScreenFieldWidget extends StatelessWidget {
   final String hintText2;
   final Function(String) onChanged1;
   final Function(String) onChanged2;
+
   const AddNewScreenFieldWidget({
-    super.key, required this.hintText1, required this.hintText2, required this.onChanged1, required this.onChanged2,
+    super.key,
+    required this.hintText1,
+    required this.hintText2,
+    required this.onChanged1,
+    required this.onChanged2,
   });
 
   @override
@@ -532,20 +656,18 @@ class AddNewScreenFieldWidget extends StatelessWidget {
 
   InputDecoration fieldDecoration(String hintText) {
     return InputDecoration(
-      filled: true,
-      fillColor: Colors.white,
-          focusColor: Colors.white,
-          hintText: hintText,
-      hintStyle: const TextStyle(color: Colors.grey),
-      enabledBorder: outlineInputBorderMethod(),
-        focusedBorder: outlineInputBorderMethod()
-        );
+        filled: true,
+        fillColor: Colors.white,
+        focusColor: Colors.white,
+        hintText: hintText,
+        hintStyle: const TextStyle(color: Colors.grey),
+        enabledBorder: outlineInputBorderMethod(),
+        focusedBorder: outlineInputBorderMethod());
   }
 
   OutlineInputBorder outlineInputBorderMethod() => const OutlineInputBorder(
-    borderRadius: BorderRadius.all(Radius.circular(5)),
-    borderSide: BorderSide(color: Colors.white)
-  );
+      borderRadius: BorderRadius.all(Radius.circular(5)),
+      borderSide: BorderSide(color: Colors.white));
 }
 
 class CustomerDialogAddWidget extends StatelessWidget {
@@ -554,7 +676,8 @@ class CustomerDialogAddWidget extends StatelessWidget {
 
   const CustomerDialogAddWidget({
     super.key,
-    required this.btTitle, required this.onTap,
+    required this.btTitle,
+    required this.onTap,
   });
 
   @override
@@ -564,13 +687,13 @@ class CustomerDialogAddWidget extends StatelessWidget {
           padding: WidgetStateProperty.all<EdgeInsetsGeometry?>(
               EdgeInsets.symmetric(horizontal: btTitle == 'ADD' ? 27 : 20)),
           backgroundColor: WidgetStateProperty.all<Color?>(
-              btTitle == 'ADD' ? Colors.teal.shade700 : Colors.grey),
+              btTitle == 'ADD' ? appThemeColor : Colors.grey),
           foregroundColor: WidgetStateProperty.all<Color?>(Colors.white),
           shape: WidgetStateProperty.all<OutlinedBorder?>(
               const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(5))))),
-      child: Text(btTitle),
+                  borderRadius: BorderRadius.all(Radius.circular(25))))),
       onPressed: onTap,
+      child: Text(btTitle),
     );
   }
 }

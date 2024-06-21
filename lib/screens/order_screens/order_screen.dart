@@ -131,6 +131,7 @@ class _OrderScreenState extends State<OrderScreen> {
                           mainAxisSpacing: 20,
                           crossAxisCount: 2),
                       itemBuilder: (_, index){
+                        print('floorTableProvider.selectedFloorTableList[index].availableStatus = ${floorTableProvider.selectedFloorTableList[index].availableStatus}');
                         return GestureDetector(
                           onTap: (){
                             selectedFloor = floorTableProvider.selectedFloorTableList[index].floorName ?? '';
@@ -189,7 +190,7 @@ class _OrderScreenState extends State<OrderScreen> {
                                       borderRadius: const BorderRadius.all(Radius.circular(20)),
                                       border: Border.all(color: Colors.cyan)
                                   ),
-                                  child: Center(child: Text('${floorTableProvider.selectedFloorTableList[index].tableName}',style: TextStyle(color: Colors.cyan,fontWeight: FontWeight.bold,fontSize: 16))),
+                                  child: Center(child: Text('${floorTableProvider.selectedFloorTableList[index].tableName}',style: const TextStyle(color: Colors.cyan,fontWeight: FontWeight.bold,fontSize: 16))),
                                 ),
                                 const Spacer(),
                                 Container(
@@ -197,10 +198,10 @@ class _OrderScreenState extends State<OrderScreen> {
                                   width: double.infinity,
                                   padding: const EdgeInsets.symmetric(vertical: 10),
                                   decoration: BoxDecoration(
-                                      color: appComboColor,
+                                      color: floorTableProvider.selectedFloorTableList[index].availableStatus == 'Free' ? tableStatusFreeColor : appThemeColor,
                                       borderRadius: const BorderRadius.only(bottomLeft: Radius.circular(20),bottomRight: Radius.circular(20))
                                   ),
-                                  child: Center(child: Text('${floorTableProvider.selectedFloorTableList[index].availableStatus}'.toUpperCase(),style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold))),
+                                  child: Center(child: Text('${floorTableProvider.selectedFloorTableList[index].availableStatus}'.toUpperCase(),style: const TextStyle(color: Colors.white,fontWeight: FontWeight.bold))),
                                 )
                               ],
                             ),
