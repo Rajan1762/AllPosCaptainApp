@@ -1,3 +1,4 @@
+import 'package:captain_app/screens/order_screens/table_detail_filling_page.dart';
 import 'package:captain_app/services/provider_services/product_provider_service.dart';
 import 'package:captain_app/utils/colors.dart';
 import 'package:captain_app/utils/common_values.dart';
@@ -127,8 +128,8 @@ class _OrderScreenState extends State<OrderScreen> {
                       // physics: const NeverScrollableScrollPhysics(),
                       gridDelegate:
                       const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisSpacing: 20,
-                          mainAxisSpacing: 20,
+                          crossAxisSpacing: 15,
+                          mainAxisSpacing: 15,
                           crossAxisCount: 2),
                       itemBuilder: (_, index){
                         print('floorTableProvider.selectedFloorTableList[index].availableStatus = ${floorTableProvider.selectedFloorTableList[index].availableStatus}');
@@ -141,11 +142,16 @@ class _OrderScreenState extends State<OrderScreen> {
                             //     selectedTable: floorTableProvider.selectedFloorTableList[index].tableName ?? ''); //= floorTableProvider.selectedFloorTableList[index].tableName;
                           },
                           child: Container(
-                            decoration: const BoxDecoration(
+                            decoration: BoxDecoration(
                                 color: Colors.white,
-                                borderRadius: BorderRadius.all(Radius.circular(20))
+                                borderRadius: const BorderRadius.all(Radius.circular(20)),
+                              border: Border.all(
+                                color: floorTableProvider.selectedFloorTableList[index].availableStatus == 'Free' ? tableStatusFreeColor : tableStatusOccupiedColor,
+                                width: 2
+                              )
                             ),
                             child: Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
                                 Padding(
                                   padding: const EdgeInsets.all(10.0),
@@ -160,7 +166,7 @@ class _OrderScreenState extends State<OrderScreen> {
                                               color: appThemeColorShade200,
                                               borderRadius: const BorderRadius.all(Radius.circular(20))
                                           ),
-                                          child: Center(child: Text('Order ${index+1}')),
+                                          child: Center(child: Text('${floorTableProvider.selectedFloorTableList[index].tableName}')),
                                         ),
                                       ),
                                       const SizedBox(width: 20),
@@ -182,27 +188,35 @@ class _OrderScreenState extends State<OrderScreen> {
                                     ],
                                   ),
                                 ),
-                                Container(
-                                  height: 40,
-                                  width: 120,
-                                  margin: const EdgeInsets.all(10),
-                                  decoration: BoxDecoration(
-                                      borderRadius: const BorderRadius.all(Radius.circular(20)),
-                                      border: Border.all(color: Colors.cyan)
+                                GestureDetector(
+                                  onTap: (){
+                                    selectedFloor = floorTableProvider.selectedFloorTableList[index].floorName ?? '';
+                                    selectedTable = floorTableProvider.selectedFloorTableList[index].tableName ?? '';
+                                    numberOfChairsInSelectedTable = floorTableProvider.selectedFloorTableList[index].chairs;
+                                    Navigator.of(context).push(MaterialPageRoute(builder: (context)=>const TableDetailFillingPage()));
+                                  },
+                                  child: Container(
+                                    height: 40,
+                                    width: 120,
+                                    margin: const EdgeInsets.all(10),
+                                    decoration: BoxDecoration(
+                                        borderRadius: const BorderRadius.all(Radius.circular(20)),
+                                        border: Border.all(color: floorTableProvider.selectedFloorTableList[index].availableStatus == 'Free' ? tableStatusFreeColor : tableStatusOccupiedColor)
+                                    ),
+                                    child: Center(child: Text('${floorTableProvider.selectedFloorTableList[index].availableStatus}',style: TextStyle(color: floorTableProvider.selectedFloorTableList[index].availableStatus == 'Free' ? tableStatusFreeColor : tableStatusOccupiedColor,fontWeight: FontWeight.bold,fontSize: 16))),
                                   ),
-                                  child: Center(child: Text('${floorTableProvider.selectedFloorTableList[index].tableName}',style: const TextStyle(color: Colors.cyan,fontWeight: FontWeight.bold,fontSize: 16))),
                                 ),
-                                const Spacer(),
-                                Container(
-                                  // height: 30,
-                                  width: double.infinity,
-                                  padding: const EdgeInsets.symmetric(vertical: 10),
-                                  decoration: BoxDecoration(
-                                      color: floorTableProvider.selectedFloorTableList[index].availableStatus == 'Free' ? tableStatusFreeColor : appThemeColor,
-                                      borderRadius: const BorderRadius.only(bottomLeft: Radius.circular(20),bottomRight: Radius.circular(20))
-                                  ),
-                                  child: Center(child: Text('${floorTableProvider.selectedFloorTableList[index].availableStatus}'.toUpperCase(),style: const TextStyle(color: Colors.white,fontWeight: FontWeight.bold))),
-                                )
+                                // const Spacer(),
+                                // Container(
+                                //   // height: 30,
+                                //   width: double.infinity,
+                                //   padding: const EdgeInsets.symmetric(vertical: 10),
+                                //   decoration: BoxDecoration(
+                                //       color: floorTableProvider.selectedFloorTableList[index].availableStatus == 'Free' ? tableStatusFreeColor : appThemeColor,
+                                //       borderRadius: const BorderRadius.only(bottomLeft: Radius.circular(20),bottomRight: Radius.circular(20))
+                                //   ),
+                                //   child: Center(child: Text('${floorTableProvider.selectedFloorTableList[index].availableStatus}'.toUpperCase(),style: const TextStyle(color: Colors.white,fontWeight: FontWeight.bold))),
+                                // )
                               ],
                             ),
                           ),

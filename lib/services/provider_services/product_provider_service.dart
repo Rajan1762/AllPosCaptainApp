@@ -20,6 +20,7 @@ class ProductProviderService extends ChangeNotifier{
 
   changeCategoryTypeValue(String value){
     selectedCategoryType = value;
+    _filteredValues = categoryMap[selectedCategoryType]!;
     notifyListeners();
   }
 
@@ -103,6 +104,7 @@ class ProductProviderService extends ChangeNotifier{
 
   addToCart(ProductList value) {
     int quantity = 0;
+    value.initialSelectionStatus = true;
     if(!_cartList.contains(value))
       {
         _cartList.add(value);
@@ -140,6 +142,7 @@ class ProductProviderService extends ChangeNotifier{
                 _cartList[i].quantity -= 1;
                 quantity = _cartList[i].quantity;
               }else{
+              value.initialSelectionStatus = false;
               _cartList.remove(value);
             }
           }
@@ -161,3 +164,4 @@ class ProductProviderService extends ChangeNotifier{
     notifyListeners();
   }
 }
+

@@ -39,6 +39,12 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   @override
+  void dispose() {
+    _formKey.currentState?.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return SafeArea(
         child: Scaffold(
@@ -72,7 +78,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               value: checkBoxStatus,
                               onChanged: (s) {
                                 setState(() {
-                                  checkBoxStatus = s ?? false;
+                                  checkBoxStatus =                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       s ?? false;
                                 });
                               }),
                           Text('Remember me',

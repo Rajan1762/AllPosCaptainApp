@@ -1,5 +1,5 @@
 import 'package:captain_app/model/cash_register_model.dart';
-import 'package:captain_app/model/product_models/new_order_kot_model.dart';
+import 'package:captain_app/screens/order_screens/order_screen.dart';
 import 'package:captain_app/services/provider_services/product_provider_service.dart';
 import 'package:captain_app/utils/colors.dart';
 import 'package:captain_app/utils/common_functions.dart';
@@ -10,7 +10,6 @@ import 'package:captain_app/utils/custom_widgets/notification_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../model/product_models/product_model.dart';
 import '../../services/network_services/product_network_services.dart';
 import '../cutomer_screens/customer_list_screen.dart';
 
@@ -95,30 +94,40 @@ class _NewOrderScreenState extends State<NewOrderScreen> {
     }
   }
 
-  _postOrderKotData(List<ProductList> cartListValues) async {
-    List<SaleOrderProducts> saleOrderProductList = [];
-    for (var cartProduct in cartListValues) {
-      saleOrderProductList.add(SaleOrderProducts.fromProductList(cartProduct));
-    }
-    await postOrderKotData(
-        newOrderKotModel: NewOrderKotModel(
-            shiftRegisterNumber: shiftRegisterNumber,
-            cashRegisterNumber: cashRegisterNumber,
-            mobile: customerMobileNumber,
-            email: customerEmailId,
-            tillCode: kTillVal,
-            floorName: selectedFloor,
-            tableName: selectedTable,
-            captainCode: kEmployeeCodeVal,
-            captainName: kEmployeeNameVal,
-            chairs: numberOfChairsInSelectedTable,
-            ledgerCode: customerLedgerCode,
-            ledgerName: customerLedgerName,
-            gSTNumber: customerGSTNumber,
-            address: customerAddress,
-            branchCode: cartListValues.first.branchCode,
-            saleOrderProducts: saleOrderProductList));
-  }
+  // TODO
+  // _postOrderKotData({required List<ProductList> cartListValues,required BuildContext context}) async {
+  //   List<SaleOrderProducts> saleOrderProductList = [];
+  //   for (var cartProduct in cartListValues) {
+  //     saleOrderProductList.add(SaleOrderProducts.fromProductList(cartProduct));
+  //   }
+  //   try{
+  //     await postOrderKotData(newOrderKotModel: NewOrderKOTModel(
+  //             shiftRegisterNumber: shiftRegisterNumber,
+  //             cashRegisterNumber: cashRegisterNumber,
+  //             mobile: customerMobileNumber,
+  //             email: customerEmailId,
+  //             tillCode: kTillVal,
+  //             floorName: selectedFloor,
+  //             tableName: selectedTable,
+  //             captainCode: kEmployeeCodeVal,
+  //             captainName: kEmployeeNameVal,
+  //             chairs: numberOfChairsInSelectedTable,
+  //             ledgerCode: customerLedgerCode,
+  //             ledgerName: customerLedgerName,
+  //             gSTNumber: customerGSTNumber,
+  //             address: customerAddress,
+  //             branchCode: cartListValues.first.branchCode,
+  //             saleOrderProducts: saleOrderProductList));
+  //   }catch(e)
+  //   {
+  //     print('_postOrderKotData Error Occurred e = $e');
+  //     if(context.mounted)
+  //       {
+  //         showErrorAlertDialog(context: context, message: e.toString());
+  //       }
+  //   }
+  //   setState(() => _isLoading = false);
+  // }
 
   void _saveInSharedPreference() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
@@ -171,19 +180,31 @@ class _NewOrderScreenState extends State<NewOrderScreen> {
                                   const VerticalDivider(),
                                   Expanded(
                                       child: GestureDetector(
-                                    onTap: () {
-                                      Navigator.of(context).push(
-                                          MaterialPageRoute(
-                                              builder: (context) =>
+                                        onTap: () {
+                                          Navigator.of(context).push(
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
                                                   const CustomerListScreen()));
-                                    },
-                                    child: const Icon(Icons.person,
-                                        color: Colors.orange, size: 35),
-                                  )),
+                                        },
+                                        child: Container(
+                                          color: Colors.white,
+                                          child: const Icon(Icons.person,
+                                              color: Colors.orange, size: 35),
+                                        ),
+                                      )),
                                   const VerticalDivider(),
                                   Expanded(
-                                      child: Icon(Icons.table_bar_outlined,
-                                          color: Colors.grey.shade600)),
+                                      child: GestureDetector(
+                                        onTap: (){
+                                          Navigator.pushAndRemoveUntil(
+                                            context,
+                                            MaterialPageRoute(builder: (context) => const OrderScreen()),
+                                                (Route<dynamic> route) => false,
+                                          );
+                                        },
+                                        child: Icon(Icons.table_bar_outlined,
+                                            color: Colors.grey.shade600),
+                                      )),
                                 ],
                               ),
                             ),
@@ -488,8 +509,10 @@ class _NewOrderScreenState extends State<NewOrderScreen> {
                                                                               .shade700)));
                                                             }).toList(),
                                                             onChanged: (c) {
-                                                              selectedCategoryType =
-                                                                  c ?? '';
+                                                              print('c= $c');
+                                                                selectedCategoryType =
+                                                                    c ?? '';
+                                                                provider.changeCategoryTypeValue(c ?? '');
                                                             },
                                                           ),
                                                         ),
@@ -600,15 +623,16 @@ class _NewOrderScreenState extends State<NewOrderScreen> {
                                                                                 ? () {
                                                                                     provider.removeFromCart(provider.filteredValues[index]);
                                                                                   }
-                                                                                : () {},
+                                                                                : (){},
                                                                           ),
                                                                           Expanded(
-                                                                              child: Text(textAlign: TextAlign.center, '${provider.filteredValues[index].quantity}', maxLines: 1)),
+                                                                              child: Text(textAlign: TextAlign.center, '${provider.filteredValues[index].initialSelectionStatus ? provider.filteredValues[index].quantity : 0}', maxLines: 1)),
                                                                           CartAddRemoveWidget(
                                                                             iconData:
                                                                                 Icons.add,
                                                                             onTap:
                                                                                 () {
+                                                                                  provider.filteredValues[index].initialSelectionStatus = true;
                                                                               provider.addToCart(provider.filteredValues[index]);
                                                                             },
                                                                           ),
@@ -711,8 +735,8 @@ class _NewOrderScreenState extends State<NewOrderScreen> {
                                                         Radius.circular(40))))),
                                         onPressed: () async {
                                           if (provider.cartList.isNotEmpty) {
-                                            _postOrderKotData(
-                                                provider.cartList);
+                                            // setState(()=>_isLoading=true);
+                                            // _postOrderKotData(cartListValues: provider.cartList, context: context);
                                           } else {
                                             showCustomAlertDialog(
                                                 context: context,
@@ -732,128 +756,108 @@ class _NewOrderScreenState extends State<NewOrderScreen> {
                             ],
                           ),
                         ),
-                        kTillVal == ""
-                            ? Stack(
-                                children: [
-                                  Container(
-                                    height: MediaQuery.of(context).size.height,
-                                    width: MediaQuery.of(context).size.width,
-                                    color: Colors.black54,
-                                  ),
-                                  tillBaseModel != null
-                                      ? Center(
-                                          child: Container(
-                                            height: MediaQuery.of(context)
-                                                    .size
-                                                    .height *
-                                                0.8,
-                                            width: MediaQuery.of(context)
-                                                    .size
-                                                    .width *
-                                                0.8,
-                                            padding: const EdgeInsets.all(10),
-                                            decoration: const BoxDecoration(
-                                              color: Colors.white,
-                                              borderRadius: BorderRadius.all(
-                                                  Radius.circular(10)),
-                                            ),
-                                            child: Material(
-                                              child: Column(
-                                                children: [
-                                                  Text(
-                                                      'Select your cash register (till)',
-                                                      style: TextStyle(
-                                                          color: Colors
-                                                              .grey.shade700,
-                                                          fontWeight:
-                                                              FontWeight.w600)),
-                                                  const Divider(),
-                                                  Expanded(
-                                                    child: GridView.builder(
-                                                        gridDelegate:
-                                                            const SliverGridDelegateWithFixedCrossAxisCount(
-                                                          crossAxisCount: 2,
-                                                          crossAxisSpacing:
-                                                              10.0,
-                                                          mainAxisSpacing: 10.0,
-                                                        ),
-                                                        itemCount: tillBaseModel
-                                                                ?.data
-                                                                ?.length ??
-                                                            0,
-                                                        // Total number of items
-                                                        itemBuilder:
-                                                            (BuildContext
-                                                                    context,
-                                                                int index) {
-                                                          return GestureDetector(
-                                                            onTap: () {
-                                                              kTillVal = tillBaseModel!
-                                                                      .data![
-                                                                          index]
-                                                                      .tillCode ??
-                                                                  '';
-                                                              kEnableCashRegisterVal =
-                                                                  tillBaseModel!
-                                                                          .data![
-                                                                              index]
-                                                                          .enableCashRegister ??
-                                                                      '';
-                                                              _getCashRegisterData(
-                                                                  context);
-                                                              _saveInSharedPreference();
-                                                            },
-                                                            child: Container(
-                                                              decoration: BoxDecoration(
-                                                                  borderRadius:
-                                                                      const BorderRadius
-                                                                          .all(
-                                                                          Radius.circular(
-                                                                              10)),
-                                                                  border: Border.all(
-                                                                      color: Colors
-                                                                          .grey
-                                                                          .shade700,
-                                                                      style: BorderStyle
-                                                                          .solid)),
-                                                              child: Column(
-                                                                mainAxisAlignment:
-                                                                    MainAxisAlignment
-                                                                        .center,
-                                                                children: [
-                                                                  const SizedBox(
-                                                                      height:
-                                                                          80,
-                                                                      width: 80,
-                                                                      child: Image(
-                                                                          image: AssetImage(
-                                                                              'assets/images/till_counter_image.png'),
-                                                                          fit: BoxFit
-                                                                              .fill)),
-                                                                  FittedBox(
-                                                                      child: Text(
-                                                                          '${tillBaseModel!.data?[index].tillCode} / ${tillBaseModel!.data?[index].tillName}',
-                                                                          maxLines:
-                                                                              1,
-                                                                          style: TextStyle(
-                                                                              color: Colors.purple.shade700,
-                                                                              fontWeight: FontWeight.w600)))
-                                                                ],
-                                                              ),
-                                                            ),
-                                                          );
-                                                        }),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          ),
-                                        )
-                                      : const Center(
-                                          child: CircularProgressIndicator()),
-                                ],
-                              )
-                            : const SizedBox()
+                        // kTillVal == ""
+                        //     ? Stack(
+                        //         children: [
+                        //           Container(
+                        //             height: MediaQuery.of(context).size.height,
+                        //             width: MediaQuery.of(context).size.width,
+                        //             color: Colors.black54,
+                        //           ),
+                        //           tillBaseModel != null
+                        //               ? Center(
+                        //                   child: Container(
+                        //                     height: MediaQuery.of(context)
+                        //                             .size
+                        //                             .height *
+                        //                         0.8,
+                        //                     width: MediaQuery.of(context)
+                        //                             .size
+                        //                             .width *
+                        //                         0.8,
+                        //                     padding: const EdgeInsets.all(10),
+                        //                     decoration: const BoxDecoration(
+                        //                       color: Colors.white,
+                        //                       borderRadius: BorderRadius.all(
+                        //                           Radius.circular(10)),
+                        //                     ),
+                        //                     child: Material(
+                        //                       child: Column(
+                        //                         children: [
+                        //                           Text('Select your cash register (till)', style: TextStyle(color: Colors.grey.shade700, fontWeight: FontWeight.w600)),
+                        //                           const Divider(),
+                        //                           Expanded(
+                        //                             child: GridView.builder(
+                        //                                 gridDelegate:
+                        //                                     const SliverGridDelegateWithFixedCrossAxisCount(
+                        //                                   crossAxisCount: 2,
+                        //                                   crossAxisSpacing: 10.0,
+                        //                                   mainAxisSpacing: 10.0,
+                        //                                 ),
+                        //                                 itemCount: tillBaseModel
+                        //                                         ?.data
+                        //                                         ?.length ??
+                        //                                     0,
+                        //                                 // Total number of items
+                        //                                 itemBuilder: (BuildContext context, int index) {
+                        //                                   return GestureDetector(
+                        //                                     onTap: () {
+                        //                                       kTillVal = tillBaseModel!.data![index].tillCode ??'';
+                        //                                       kEnableCashRegisterVal = tillBaseModel!.data![index].enableCashRegister ?? '';
+                        //                                       _getCashRegisterData(context);
+                        //                                       _saveInSharedPreference();
+                        //                                     },
+                        //                                     child: Container(
+                        //                                       decoration: BoxDecoration(
+                        //                                           borderRadius:
+                        //                                               const BorderRadius
+                        //                                                   .all(
+                        //                                                   Radius.circular(
+                        //                                                       10)),
+                        //                                           border: Border.all(
+                        //                                               color: Colors
+                        //                                                   .grey
+                        //                                                   .shade700,
+                        //                                               style: BorderStyle
+                        //                                                   .solid)),
+                        //                                       child: Column(
+                        //                                         mainAxisAlignment:
+                        //                                             MainAxisAlignment
+                        //                                                 .center,
+                        //                                         children: [
+                        //                                           const SizedBox(
+                        //                                               height:
+                        //                                                   80,
+                        //                                               width: 80,
+                        //                                               child: Image(
+                        //                                                   image: AssetImage(
+                        //                                                       'assets/images/till_counter_image.png'),
+                        //                                                   fit: BoxFit
+                        //                                                       .fill)),
+                        //                                           FittedBox(
+                        //                                               child: Text(
+                        //                                                   '${tillBaseModel!.data?[index].tillCode} / ${tillBaseModel!.data?[index].tillName}',
+                        //                                                   maxLines:
+                        //                                                       1,
+                        //                                                   style: TextStyle(
+                        //                                                       color: Colors.purple.shade700,
+                        //                                                       fontWeight: FontWeight.w600)))
+                        //                                         ],
+                        //                                       ),
+                        //                                     ),
+                        //                                   );
+                        //                                 }),
+                        //                           ),
+                        //                         ],
+                        //                       ),
+                        //                     ),
+                        //                   ),
+                        //                 )
+                        //               : const Center(
+                        //                   child: CircularProgressIndicator()),
+                        //         ],
+                        //       )
+                        //     : const SizedBox()
                       ],
                     )
                   : const FullScreenLoadingWidget(isLoading: true),

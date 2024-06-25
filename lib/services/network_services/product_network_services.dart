@@ -9,18 +9,19 @@ import '../../model/product_models/product_model.dart';
 import '../../utils/constants.dart';
 import '../provider_services/product_provider_service.dart';
 
-Future postOrderKotData({required NewOrderKotModel newOrderKotModel}) async{
-  print('postOrderKotData = $newOrderKotURL');
-  printFull('json.encode(newOrderKotModel.toJson()) = ${json.encode(newOrderKotModel.toJson())}');
-  // print('json.encode(newOrderKotModel.toJson()) = ${json.encode(newOrderKotModel.toJson())}');
-  var response = await http.post(Uri.parse(newOrderKotURL),headers: {'Content-Type': 'application/json','OID': kOrganizationCodeVal,'EID': kEmployeeCodeVal,'Authorization': 'Bearer $kAuthTokenVal'});
-  print("getProductListData status code = ${response.statusCode}\nbody = ${response.body}");
-  if(response.statusCode == 200 && response.body!="")
-  {
-      return ProductBaseModel.fromJson(json.decode(response.body));
-  }
-  return null;
-}
+//TODO
+// Future postOrderKotData({required NewOrderKotModel newOrderKotModel}) async{
+//   print('postOrderKotData = $newOrderKotURL');
+//   printFull('json.encode(newOrderKotModel.toJson()) = ${json.encode(newOrderKotModel.toJson())}');
+//   // print('json.encode(newOrderKotModel.toJson()) = ${json.encode(newOrderKotModel.toJson())}');
+//   var response = await http.post(Uri.parse(newOrderKotURL),headers: {'Content-Type': 'application/json','OID': kOrganizationCodeVal,'EID': kEmployeeCodeVal,'Authorization': 'Bearer $kAuthTokenVal'});
+//   print("getProductListData status code = ${response.statusCode}\nbody = ${response.body}");
+//   if(response.statusCode == 200 && response.body!="")
+//   {
+//       return ProductBaseModel.fromJson(json.decode(response.body));
+//   }
+//   return null;
+// }
 
 Future<ProductBaseModel?> getProductListData() async{
   print('productListUrl = $productListUrl');

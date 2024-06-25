@@ -13,4 +13,6 @@ Color appComboColor = const Color.fromRGBO(90, 10, 69,1);
 Color scaffoldBgColor = Colors.grey.shade200;
 Color overlayColor = Colors.orange;
 Color tableStatusFreeColor = Colors.green.shade300;
+Color tableStatusOccupiedColor = Colors.red.shade300;
+// Color orderStatusFreeColor = Colors.green.shade300;
 

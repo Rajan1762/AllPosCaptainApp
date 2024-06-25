@@ -118,6 +118,7 @@ class ProductList {
   int quantity = 1;
   String tableName = '';
   String floorName = '';
+  bool initialSelectionStatus = false;
 
   ProductList(
       {this.productCode,

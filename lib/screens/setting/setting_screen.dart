@@ -1,4 +1,5 @@
 import 'package:captain_app/model/till_model.dart';
+import 'package:captain_app/screens/setting/kot_print_detail_screen.dart';
 import 'package:captain_app/utils/colors.dart';
 import 'package:captain_app/utils/common_values.dart';
 import 'package:captain_app/utils/constants.dart';
@@ -54,7 +55,9 @@ class _SettingScreenState extends State<SettingScreen> {
                 ],
               ),
             ),
-            const SettingFiledWidget(leadingIcon: Icons.print_outlined, title: 'KOT Printers'),
+            SettingFiledWidget(leadingIcon: Icons.print_outlined, title: 'KOT Printers',onTap: (){
+              Navigator.of(context).push(MaterialPageRoute(builder: (context)=>const KotPrintDetailScreen()));
+            }),
             const SettingFiledWidget(leadingIcon: Icons.print_outlined, title: 'Waiter Printer'),
             SettingFiledWidget(leadingIcon: Icons.countertops_outlined, title: 'Till',trailingWidget: Text('T03-CR2-Android',style: TextStyle(color: Colors.grey.shade600,fontSize: 14)),
             onTap: (){
@@ -192,65 +195,6 @@ class _TillAlertDialogStatefulWidgetState extends State<TillAlertDialogStatefulW
         )
       ],
     );
-    //   AlertDialog(
-
-
-    //   contentPadding: EdgeInsets.all(0),
-    //   content: Column(
-    //     crossAxisAlignment: CrossAxisAlignment.start,
-    //     children: [
-    //       Text('Select Till',style: TextStyle(color: Colors.grey.shade800,fontWeight: FontWeight.w600,fontSize: 18),),
-    //       Divider(),
-    //       Expanded(
-    //         child: ListView.builder(
-    //             shrinkWrap: true,
-    //             itemCount: tillBaseModel?.data?.length
-    //             ,itemBuilder: (context,index){
-    //           return InkWell(
-    //             splashColor: appThemeColor,
-    //             onTap: (){
-    //               print('tillBaseModel?.data?[index].isSelected = ${tillBaseModel?.data?[index].isSelected}');
-    //               kTillVal = tillBaseModel?.data?[index].tillCode ?? '';
-    //               for(int i = 0;i<tillBaseModel!.data!.length;i++)
-    //               {
-    //                 if(i == index)
-    //                 {
-    //                   tillBaseModel?.data?[i].isSelected = true;
-    //                 }else{
-    //                   tillBaseModel?.data?[i].isSelected = false;
-    //                 }
-    //               }
-    //               setState(() {
-    //                 print('After isSelected = ${tillBaseModel?.data?[index].isSelected}');
-    //               });
-    //             },
-    //             child: Padding(
-    //               padding: const EdgeInsets.symmetric(vertical: 10.0),
-    //               child: Row(
-    //                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-    //                 children: [
-    //                   Text('${tillBaseModel?.data?[index].tillName}'),
-    //                   Visibility(
-    //                       visible: tillBaseModel?.data![index].isSelected ?? false,
-    //                       child: const Icon(Icons.check_circle_rounded))
-    //                 ],
-    //               ),
-    //             ),
-    //           );
-    //         }),
-    //       ),
-    //       Divider(),
-    //       Row(
-    //         mainAxisAlignment: MainAxisAlignment.end,
-    //         children: [
-    //           Text('CANCEL',style: TextStyle(color: appThemeColor,fontSize: 16,fontWeight: FontWeight.w600)),
-    //           const SizedBox(width: 10),
-    //           const Text('CONFIRM',style: TextStyle(color: Colors.grey,fontSize: 16,fontWeight: FontWeight.w600)),
-    //         ],
-    //       )
-    //     ],
-    //   ),
-    // );
   }
 }
 
