@@ -176,7 +176,6 @@ class _NewOrderScreenState extends State<NewOrderScreen> {
     }).toList();
     double productSubTotal = 0;
 
-
     try {
       await postOrderKotData(newOrderKotModel: NewOrderKOTModel(
         totalQuantity: 2,
