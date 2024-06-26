@@ -1,3 +1,5 @@
+import '../product_models/product_model.dart';
+
 class NewOrderKOTModel {
   int? totalQuantity;
   int? totalItems;
@@ -328,6 +330,49 @@ class SaleInvoiceProducts {
         this.cookingNotes,
         this.kOTNumber});
 
+  factory SaleInvoiceProducts.fromProductList(ProductList product) {
+    return SaleInvoiceProducts(
+        costPrice: product.purchasePrice ?? '',
+        productPrice: int.tryParse(product.salePrice1 ?? '0') ?? 0,
+        addonPrice: 0,
+        basePrice: '',
+        uIBasePrice: 0,
+        quantity: product.quantity,
+        subTotal: '',
+        uISubTotal: 0,
+        productDiscountPercentage: int.tryParse(product.discountPercentage ?? '0') ?? 0,
+        productDiscountAmount: '0.00',
+        orderDiscountPercentage: 0,
+        orderDiscountAmount: '0.00',
+        totalDiscountPercentage: 0,
+        totalDiscountAmount: 0,
+        taxableAmount: 0.0,
+        taxPercentage: product.taxPercentage ?? '',
+        taxAmount: 0.0,
+        cessPercentage: product.cessPercentage ?? '',
+        cessAmount: 0,
+        salePrice: int.tryParse(product.salePrice1 ?? '0') ?? 0,
+        isCancelled: 0,
+        isInvoiced: 0,
+        saleInvoiceProductTaxes: [],
+        saleInvoiceProductDiscounts: [],
+        saleInvoiceProductCharges: [],
+        saleInvoiceProductAddons: [],
+        kitchenName: product.kitchenName ?? '',
+        productCode: product.productCode ?? '',
+        sKUCode: product.sKUCode ?? '',
+        hSNSACCode: product.hSNSACCode ?? '',
+        productName: product.productName ?? '',
+        nativeName: product.nativeName ?? '',
+        productCategory: product.productCategory ?? '',
+        productType: product.productType ?? '',
+        productUOM: product.productUOM ?? '',
+        taxGroup: product.taxGroup ?? '',
+        cookingNotes: '',
+        kOTNumber: ''
+    );
+  }
+
   SaleInvoiceProducts.fromJson(Map<String, dynamic> json) {
     costPrice = json['Cost_Price'];
     productPrice = json['Product_Price'];
@@ -438,10 +483,11 @@ class SaleInvoiceProductTaxes {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['Tax_Percentage'] = this.taxPercentage;
-    data['Tax_Amount'] = this.taxAmount;
-    data['Tax_Name'] = this.taxName;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['Tax_Percentage'] = taxPercentage;
+    data['Tax_Amount'] = taxAmount;
+    data['Tax_Name'] = taxName;
     return data;
   }
 }
+

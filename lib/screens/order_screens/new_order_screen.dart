@@ -10,6 +10,8 @@ import 'package:captain_app/utils/custom_widgets/notification_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../model/order_models/new_order_model.dart';
+import '../../model/product_models/product_model.dart';
 import '../../services/network_services/product_network_services.dart';
 import '../cutomer_screens/customer_list_screen.dart';
 
@@ -31,14 +33,16 @@ class _NewOrderScreenState extends State<NewOrderScreen> {
 
   _incrementDecrementAnimation(double val) {
     print(
-        'before val = ${val.toInt()}, _animatedHeightValue = ${_animatedHeightValue.toInt()}');
+        'before val = ${val
+            .toInt()}, _animatedHeightValue = ${_animatedHeightValue.toInt()}');
     if (_animatedHeightValue.toInt() > 40) {
       _animatedHeightValue -= val.toInt();
     } else {
       _animatedHeightValue += val.toInt();
     }
     print(
-        'after val = ${val.toInt()}, _animatedHeightValue = ${_animatedHeightValue.toInt()}');
+        'after val = ${val
+            .toInt()}, _animatedHeightValue = ${_animatedHeightValue.toInt()}');
     setState(() {});
   }
 
@@ -60,7 +64,7 @@ class _NewOrderScreenState extends State<NewOrderScreen> {
 
   _getProductListData(BuildContext context) async {
     ProductProviderService provider =
-        Provider.of<ProductProviderService>(context, listen: false);
+    Provider.of<ProductProviderService>(context, listen: false);
     if (provider.categoryMap.isEmpty) {
       try {
         provider.productBaseModel = await getProductListData();
@@ -80,7 +84,7 @@ class _NewOrderScreenState extends State<NewOrderScreen> {
       setState(() => _isLoading = true);
       try {
         CashRegisterModel? cashRegisterModel =
-            await getCashRegisterData(tillCode: kTillVal);
+        await getCashRegisterData(tillCode: kTillVal);
         if (cashRegisterModel == null) {
           throw CustomException('Something went wrong try again later');
         }
@@ -94,7 +98,136 @@ class _NewOrderScreenState extends State<NewOrderScreen> {
     }
   }
 
+  // SaleInvoiceProducts convertProductListToSaleInvoiceProduct(
+  //     ProductList product) {
+  //   return SaleInvoiceProducts(
+  //     productCode: product.productCode,
+  //     sKUCode: product.sKUCode,
+  //     hSNSACCode: product.hSNSACCode,
+  //     productName: product.productName,
+  //     nativeName: product.nativeName,
+  //     productCategory: product.productCategory,
+  //     productType: product.productType,
+  //     productUOM: product.productUOM,
+  //     kitchenName: product.kitchenName,
+  //     taxGroup: product.taxGroup,
+  //     taxPercentage: product.taxPercentage,
+  //     cessPercentage: product.cessPercentage,
+  //     costPrice: product.purchasePrice,
+  //     salePrice: int.tryParse(product.salePrice1 ?? '0'),
+  //     quantity: product.quantity,
+  //     saleInvoiceProductTaxes: [],
+  //     saleInvoiceProductDiscounts: [],
+  //     saleInvoiceProductCharges: [],
+  //     saleInvoiceProductAddons: [],
+  //     // You can map other fields as needed
+  //   );
+  // }
+
+  SaleInvoiceProducts convertProductListToSaleInvoiceProduct(ProductList product) {
+    return SaleInvoiceProducts(
+        costPrice: product.purchasePrice ?? '',
+        productPrice: int.tryParse(product.salePrice1 ?? '0') ?? 0,
+        addonPrice: 0,
+        basePrice:  product.salePrice1 ?? '0',
+        uIBasePrice: 0,
+        quantity: product.quantity,
+        subTotal:  "${product.quantity * (int.tryParse(product.salePrice1 ?? '0') ?? 0)}",
+        uISubTotal: 0,
+        productDiscountPercentage: int.tryParse(product.discountPercentage ?? '0') ?? 0,
+        productDiscountAmount: '0.00',
+        orderDiscountPercentage: 0,
+        orderDiscountAmount: '0.00',
+        totalDiscountPercentage: 0,
+        totalDiscountAmount: 0,
+        taxableAmount: 0.0,
+        taxPercentage: product.taxPercentage ?? '',
+        taxAmount: 0.0,
+        cessPercentage: product.cessPercentage ?? '',
+        cessAmount: 0,
+        salePrice: int.tryParse(product.salePrice1 ?? '0') ?? 0,
+        isCancelled: 0,
+        isInvoiced: 0,
+        saleInvoiceProductTaxes: [],
+        saleInvoiceProductDiscounts: [],
+        saleInvoiceProductCharges: [],
+        saleInvoiceProductAddons: [],
+        kitchenName: product.kitchenName ?? '',
+        productCode: product.productCode ?? '',
+        sKUCode: product.sKUCode ?? '',
+        hSNSACCode: product.hSNSACCode ?? '',
+        productName: product.productName ?? '',
+        nativeName: product.nativeName ?? '',
+        productCategory: product.productCategory ?? '',
+        productType: product.productType ?? '',
+        productUOM: product.productUOM ?? '',
+        taxGroup: product.taxGroup ?? '',
+        cookingNotes: '',
+        kOTNumber: ''
+    );
+  }
+
   // TODO
+  _postOrderKotData({required List<
+      ProductList> cartListValues, required BuildContext context}) async {
+    List<SaleInvoiceProducts> salesInvoiceProduct = cartListValues.map((
+        product) {
+      return convertProductListToSaleInvoiceProduct(product);
+    }).toList();
+    double productSubTotal = 0;
+
+
+    try {
+      await postOrderKotData(newOrderKotModel: NewOrderKOTModel(
+        totalQuantity: 2,
+          totalItems: 2,
+          productSubtotal: "314.29",
+          productDiscount: "0.00",
+          orderDiscount: "0.00",
+          totalDiscount: "0.00",
+          productTaxable: "314.29",
+          productTax: "15.71",
+          productCess: "0.00",
+          productWithTaxCess: "330.00",
+          productChargeTaxable: "0.00",
+          productChargeTax: "0.00",
+          productChargeCess: "0.00",
+          productChargeWithTaxCess: "0.00",
+          orderChargeTaxable: "0.00",
+          orderChargeTax: "0.00",
+          orderChargeCess: "0.00",
+          orderChargeWithTaxCess: "0.00",
+          roundingOff: "0.00",
+          tipsAmount: "0.00",
+          adjustmentAmount: "0.00",
+          grandTotal: "330.00",
+          shiftRegisterNumber: shiftRegisterNumber,
+          cashRegisterNumber: cashRegisterNumber,
+          tillCode: kTillVal,
+          tillName : "Main",
+          saleOrderType: "Takeaway",
+          cashierCode: kEmployeeCodeVal,
+          cashierName: kEmployeeNameVal,
+          receivedAmount: "330.00",
+          balanceAmount: "0.00",
+          saleInvoiceHistories: [],
+          saleInvoiceCharges: [],
+          saleInvoiceDiscounts: [],
+          saleInvoicePayments: [],
+          reprintCount: 0,
+          generateToken: 0,
+          branchCode: cartListValues.first.branchCode,
+          saleInvoiceProducts: salesInvoiceProduct));
+    } catch (e) {
+      print('_postOrderKotData Error Occurred e = $e');
+      if (context.mounted) {
+        showErrorAlertDialog(context: context, message: e.toString());
+      }
+    }
+    setState(() => _isLoading = false);
+  }
+
+  //TODO
   // _postOrderKotData({required List<ProductList> cartListValues,required BuildContext context}) async {
   //   List<SaleOrderProducts> saleOrderProductList = [];
   //   for (var cartProduct in cartListValues) {
@@ -144,722 +277,916 @@ class _NewOrderScreenState extends State<NewOrderScreen> {
             children: [
               provider.categoryMap.isNotEmpty
                   ? Stack(
-                      children: [
-                        Column(
+                children: [
+                  Column(
+                    children: [
+                      Container(
+                        height: 50,
+                        decoration: const BoxDecoration(
+                            color: Colors.white,
+                            border: Border(
+                                bottom: BorderSide(color: Colors.grey))),
+                        child: Row(
+                          // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
-                            Container(
-                              height: 50,
-                              decoration: const BoxDecoration(
-                                  color: Colors.white,
-                                  border: Border(
-                                      bottom: BorderSide(color: Colors.grey))),
-                              child: Row(
-                                // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  GestureDetector(
-                                    onTap: () {
-                                      Navigator.of(context).pop();
-                                    },
-                                    child: Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 10.0),
-                                      child: Icon(
-                                        Icons.arrow_circle_left_outlined,
-                                        color: appThemeColor,
-                                        size: 30,
-                                      ),
-                                    ),
-                                  ),
-                                  const VerticalDivider(),
-                                  Expanded(
-                                      child: Text('Dine In',
-                                          textAlign: TextAlign.center,
-                                          style: TextStyle(
-                                              color: appThemeColor,
-                                              fontWeight: FontWeight.w600))),
-                                  const VerticalDivider(),
-                                  Expanded(
-                                      child: GestureDetector(
-                                        onTap: () {
-                                          Navigator.of(context).push(
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                  const CustomerListScreen()));
-                                        },
-                                        child: Container(
-                                          color: Colors.white,
-                                          child: const Icon(Icons.person,
-                                              color: Colors.orange, size: 35),
-                                        ),
-                                      )),
-                                  const VerticalDivider(),
-                                  Expanded(
-                                      child: GestureDetector(
-                                        onTap: (){
-                                          Navigator.pushAndRemoveUntil(
-                                            context,
-                                            MaterialPageRoute(builder: (context) => const OrderScreen()),
-                                                (Route<dynamic> route) => false,
-                                          );
-                                        },
-                                        child: Icon(Icons.table_bar_outlined,
-                                            color: Colors.grey.shade600),
-                                      )),
-                                ],
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.of(context).pop();
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 10.0),
+                                child: Icon(
+                                  Icons.arrow_circle_left_outlined,
+                                  color: appThemeColor,
+                                  size: 30,
+                                ),
                               ),
                             ),
+                            const VerticalDivider(),
                             Expanded(
-                                child: ListView.builder(
-                                    itemCount: provider.cartList.length,
-                                    itemBuilder: (context, index) {
-                                      return Column(
+                                child: Text('Dine In',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                        color: appThemeColor,
+                                        fontWeight: FontWeight.w600))),
+                            const VerticalDivider(),
+                            Expanded(
+                                child: GestureDetector(
+                                  onTap: () {
+                                    Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                            const CustomerListScreen()));
+                                  },
+                                  child: Container(
+                                    color: Colors.white,
+                                    child: const Icon(Icons.person,
+                                        color: Colors.orange, size: 35),
+                                  ),
+                                )),
+                            const VerticalDivider(),
+                            Expanded(
+                                child: GestureDetector(
+                                  onTap: () {
+                                    Navigator.pushAndRemoveUntil(
+                                      context,
+                                      MaterialPageRoute(builder: (
+                                          context) => const OrderScreen()),
+                                          (Route<dynamic> route) => false,
+                                    );
+                                  },
+                                  child: Icon(Icons.table_bar_outlined,
+                                      color: Colors.grey.shade600),
+                                )),
+                          ],
+                        ),
+                      ),
+                      Expanded(
+                          child: ListView.builder(
+                              itemCount: provider.cartList.length,
+                              itemBuilder: (context, index) {
+                                return Column(
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 10.0, vertical: 2),
+                                      child: Row(
                                         children: [
-                                          Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 10.0, vertical: 2),
-                                            child: Row(
-                                              children: [
-                                                GestureDetector(
-                                                  onTap: () {
-                                                    showDialog(
-                                                        context: context,
-                                                        builder: (context) {
-                                                          return Dialog(
-                                                            shape: RoundedRectangleBorder(
-                                                              borderRadius: BorderRadius.circular(5),
-                                                            ),
-                                                            child: Padding(
-                                                              padding:
-                                                                  const EdgeInsets.all(20.0),
-                                                              child: Column(
-                                                                mainAxisSize: MainAxisSize.min,
-                                                                crossAxisAlignment: CrossAxisAlignment.start,
-                                                                children: [
-                                                                  Text(provider.cartList[index].productName ?? '',style: const TextStyle(fontSize: 16)),
-                                                                  GestureDetector(
-                                                                    onTap: (){
-                                                                      print('object');
-                                                                      showDialog(context: context, builder: (context){
+                                          GestureDetector(
+                                            onTap: () {
+                                              showDialog(
+                                                  context: context,
+                                                  builder: (context) {
+                                                    return Dialog(
+                                                      shape: RoundedRectangleBorder(
+                                                        borderRadius: BorderRadius
+                                                            .circular(5),
+                                                      ),
+                                                      child: Padding(
+                                                        padding:
+                                                        const EdgeInsets.all(
+                                                            20.0),
+                                                        child: Column(
+                                                          mainAxisSize: MainAxisSize
+                                                              .min,
+                                                          crossAxisAlignment: CrossAxisAlignment
+                                                              .start,
+                                                          children: [
+                                                            Text(provider
+                                                                .cartList[index]
+                                                                .productName ??
+                                                                '',
+                                                                style: const TextStyle(
+                                                                    fontSize: 16)),
+                                                            GestureDetector(
+                                                                onTap: () {
+                                                                  print(
+                                                                      'object');
+                                                                  showDialog(
+                                                                      context: context,
+                                                                      builder: (
+                                                                          context) {
                                                                         return Dialog(
                                                                           shape: RoundedRectangleBorder(
-                                                                            borderRadius: BorderRadius.circular(5),
+                                                                            borderRadius: BorderRadius
+                                                                                .circular(
+                                                                                5),
                                                                           ),
                                                                           child: Column(
-                                                                            mainAxisSize: MainAxisSize.min,
+                                                                            mainAxisSize: MainAxisSize
+                                                                                .min,
                                                                             children: [
                                                                               TextField(
                                                                                 decoration: InputDecoration(
-                                                                                  border: _addExtraNoteFieldBorder(),
-                                                                                  enabledBorder: _addExtraNoteFieldBorder(),
-                                                                                  focusedBorder: _addExtraNoteFieldBorder(),
-                                                                                  errorBorder: _addExtraNoteFieldBorder()
+                                                                                    border: _addExtraNoteFieldBorder(),
+                                                                                    enabledBorder: _addExtraNoteFieldBorder(),
+                                                                                    focusedBorder: _addExtraNoteFieldBorder(),
+                                                                                    errorBorder: _addExtraNoteFieldBorder()
                                                                                 ),
                                                                               )
                                                                             ],
                                                                           ),
                                                                         );
                                                                       });
-                                                                    },
-                                                                      child: AddNotesTextFieldWidget(focusNode: _focusNode1, controller: textEditingController1,hintText: 'Cooking Notes')),
-                                                                  AddNotesTextFieldWidget(focusNode: _focusNode2, controller: textEditingController2,hintText: 'Quantity'),
-                                                                  const SizedBox(height: 10),
-                                                                  AddNotesRowWidget(v1: '1', v2: '2', v3: '3', onTap1: () {_addNotesOnTapFunction('1');}, onTap2: () {_addNotesOnTapFunction('2');}, onTap3: () {_addNotesOnTapFunction('3');},),
-                                                                  AddNotesRowWidget(v1: '4', v2: '5', v3: '6', onTap1: () {_addNotesOnTapFunction('4');}, onTap2: () {_addNotesOnTapFunction('5');}, onTap3: () {_addNotesOnTapFunction('6');},),
-                                                                  AddNotesRowWidget(v1: '7', v2: '8', v3: '9', onTap1: () {_addNotesOnTapFunction('7');}, onTap2: () {_addNotesOnTapFunction('8');}, onTap3: () {_addNotesOnTapFunction('9');},),
-                                                                  AddNotesRowWidget(v1: 'CLR', v2: '0', v3: '.', onTap1: () {textEditingController1.text = '';textEditingController2.text = '';}, onTap2: () {_addNotesOnTapFunction('0');}, onTap3: () {_addNotesOnTapFunction('.');},),
-                                                                  Row(
-                                                                    children: [
-                                                                      Expanded(
-                                                                        child: GestureDetector(
-                                                                          onTap: (){
-                                                                            Navigator.of(context).pop();
-                                                                          },
-                                                                          child: Container(
-                                                                            padding: const EdgeInsets.all(10),
-                                                                            decoration: BoxDecoration(
-                                                                              borderRadius: const BorderRadius.all(Radius.circular(5)),
-                                                                              border: Border.all(
-                                                                                color: Colors.red
-                                                                              )
-                                                                            ),
-                                                                            child: const Center(child: Text('CLOSE',style: TextStyle(color: Colors.red,fontWeight: FontWeight.w600),)),
-                                                                          ),
-                                                                        ),
-                                                                      ),
-                                                                      const SizedBox(width: 10),
-                                                                      Expanded(
-                                                                        child: Container(
-                                                                          padding: const EdgeInsets.all(10),
-                                                                          decoration: BoxDecoration(
-                                                                            color: appThemeColor,
-                                                                              borderRadius: const BorderRadius.all(Radius.circular(5)),
-                                                                              // border: Border.all(
-                                                                              //     color: Colors.red
-                                                                              // )
-                                                                          ),
-                                                                          child: const Center(child: Text('CONFIRM',style: TextStyle(color: Colors.white,fontWeight: FontWeight.w600),)),
-                                                                        ),
-                                                                      )
-                                                                    ],
-                                                                  )
-                                                                ],
-                                                              ),
-                                                            ),
-                                                          );
-                                                        });
-                                                  },
-                                                  child: SizedBox(
-                                                      width:
-                                                          MediaQuery.of(context)
-                                                                  .size
-                                                                  .width *
-                                                              0.4,
-                                                      child: Text(
-                                                          '${provider.cartList[index].productName}')),
-                                                ),
-                                                Expanded(
-                                                  child: Row(
-                                                    children: [
-                                                      Expanded(
-                                                          child: Text(
-                                                              '${double.parse(provider.cartList[index].purchasePrice ?? '0.0')}',
-                                                              maxLines: 1)),
-                                                      SizedBox(
-                                                        width: MediaQuery.of(
-                                                                    context)
-                                                                .size
-                                                                .width *
-                                                            0.28,
-                                                        child: Row(
-                                                          children: [
-                                                            CartAddRemoveWidget(
-                                                              iconData:
-                                                                  Icons.remove,
-                                                              onTap: () {
-                                                                provider.removeFromCart(
-                                                                    provider.cartList[
-                                                                        index]);
+                                                                },
+                                                                child: AddNotesTextFieldWidget(
+                                                                    focusNode: _focusNode1,
+                                                                    controller: textEditingController1,
+                                                                    hintText: 'Cooking Notes')),
+                                                            AddNotesTextFieldWidget(
+                                                                focusNode: _focusNode2,
+                                                                controller: textEditingController2,
+                                                                hintText: 'Quantity'),
+                                                            const SizedBox(
+                                                                height: 10),
+                                                            AddNotesRowWidget(
+                                                              v1: '1',
+                                                              v2: '2',
+                                                              v3: '3',
+                                                              onTap1: () {
+                                                                _addNotesOnTapFunction(
+                                                                    '1');
                                                               },
-                                                            ),
-                                                            Expanded(
-                                                                child: Text(
-                                                                    textAlign:
-                                                                        TextAlign
-                                                                            .center,
-                                                                    '${provider.cartList[index].quantity}',
-                                                                    maxLines:
-                                                                        1)),
-                                                            CartAddRemoveWidget(
-                                                              iconData:
-                                                                  Icons.add,
-                                                              onTap: () {
-                                                                provider.addToCart(
-                                                                    provider.cartList[
-                                                                        index]);
+                                                              onTap2: () {
+                                                                _addNotesOnTapFunction(
+                                                                    '2');
                                                               },
-                                                            ),
-                                                          ],
-                                                        ),
-                                                      ),
-                                                      Expanded(
-                                                          child: Text(
-                                                              '${provider.cartList[index].quantity * double.parse(provider.cartList[index].purchasePrice ?? '0.0')}',
-                                                              textAlign:
-                                                                  TextAlign.end,
-                                                              maxLines: 1))
-                                                    ],
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                          const Divider()
-                                        ],
-                                      );
-                                    }))
-                          ],
-                        ),
-                        Positioned(
-                          bottom: 0,
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              AnimatedContainer(
-                                  curve: Curves.fastOutSlowIn,
-                                  duration: const Duration(milliseconds: 500),
-                                  height: _animatedHeightValue,
-                                  width: MediaQuery.of(context).size.width,
-                                  color: Colors.transparent,
-                                  child: Stack(
-                                    children: [
-                                      SingleChildScrollView(
-                                        physics:
-                                            const NeverScrollableScrollPhysics(),
-                                        child: Container(
-                                          margin:
-                                              const EdgeInsets.only(top: 40),
-                                          height: (MediaQuery.of(context)
-                                                  .size
-                                                  .height *
-                                              0.8),
-                                          width:
-                                              MediaQuery.of(context).size.width,
-                                          decoration: const BoxDecoration(
-                                              color: Colors.white),
-                                          child: Column(
-                                            children: [
-                                              Padding(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                        horizontal: 10.0,
-                                                        vertical: 10),
-                                                child: Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.end,
-                                                  children: [
-                                                    Text(
-                                                      vegOnlySwitchStatus
-                                                          ? 'Veg only'
-                                                          : 'Non Veg',
-                                                      style: TextStyle(
-                                                          color:
-                                                              vegOnlySwitchStatus
-                                                                  ? Colors.green
-                                                                  : Colors.red,
-                                                          //Colors.grey.shade700,
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                          fontSize: 18),
-                                                    ),
-                                                    const SizedBox(
-                                                      width: 20,
-                                                    ),
-                                                    Switch(
-                                                        activeColor:
-                                                            Colors.green,
-                                                        inactiveThumbColor:
-                                                            Colors.red,
-                                                        inactiveTrackColor:
-                                                            Colors.red.shade100,
-                                                        value:
-                                                            vegOnlySwitchStatus,
-                                                        onChanged: (s) {
-                                                          setState(() {
-                                                            vegOnlySwitchStatus =
-                                                                s;
-                                                          });
-                                                        })
-                                                  ],
-                                                ),
-                                              ),
-                                              Container(
-                                                height: 65,
-                                                width: MediaQuery.of(context)
-                                                    .size
-                                                    .width,
-                                                margin:
-                                                    const EdgeInsets.fromLTRB(
-                                                        15, 0, 15, 10),
-                                                padding:
-                                                    const EdgeInsets.all(8),
-                                                decoration: BoxDecoration(
-                                                    border: Border.all(
-                                                        color: Colors.grey),
-                                                    borderRadius:
-                                                        const BorderRadius.all(
-                                                            Radius.circular(
-                                                                10))),
-                                                child: Row(
-                                                  children: [
-                                                    Expanded(
-                                                      child: Container(
-                                                        height: double.infinity,
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .symmetric(
-                                                                horizontal: 10),
-                                                        decoration: BoxDecoration(
-                                                            color: appThemeColorShade200,
-                                                            borderRadius:
-                                                                const BorderRadius
-                                                                    .all(
-                                                                    Radius.circular(
-                                                                        10))),
-                                                        child:
-                                                            DropdownButtonHideUnderline(
-                                                          child: DropdownButton(
-                                                            isExpanded: true,
-                                                            // hint: const Text('Select Waiter'),
-                                                            value:
-                                                                selectedCategoryType,
-                                                            items: provider
-                                                                .categoryList
-                                                                .map<
-                                                                    DropdownMenuItem<
-                                                                        String>>((String
-                                                                    value) {
-                                                              return DropdownMenuItem<
-                                                                      String>(
-                                                                  value: value,
-                                                                  child: Text(
-                                                                      value,
-                                                                      style: TextStyle(
-                                                                          color: Colors
-                                                                              .grey
-                                                                              .shade700)));
-                                                            }).toList(),
-                                                            onChanged: (c) {
-                                                              print('c= $c');
-                                                                selectedCategoryType =
-                                                                    c ?? '';
-                                                                provider.changeCategoryTypeValue(c ?? '');
-                                                            },
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    const SizedBox(width: 10),
-                                                    Expanded(
-                                                      child: TextField(
-                                                        onChanged: provider
-                                                            .filterSearchValues,
-                                                        decoration:
-                                                            const InputDecoration(
-                                                                border:
-                                                                    InputBorder
-                                                                        .none,
-                                                                hintText:
-                                                                    'Search'),
-                                                      ),
-                                                    )
-                                                  ],
-                                                ),
-                                              ),
-                                              Expanded(
-                                                child: ListView.builder(
-                                                    itemCount: provider
-                                                        .filteredValues.length,
-                                                    // itemCount: provider.categoryMap[selectedCategoryType]?.length,
-                                                    itemBuilder:
-                                                        (context, index) {
-                                                      return Column(
-                                                        children: [
-                                                          Padding(
-                                                            padding:
-                                                                const EdgeInsets
-                                                                    .symmetric(
-                                                                    horizontal:
-                                                                        10.0,
-                                                                    vertical:
-                                                                        5),
-                                                            child: Row(
+                                                              onTap3: () {
+                                                                _addNotesOnTapFunction(
+                                                                    '3');
+                                                              },),
+                                                            AddNotesRowWidget(
+                                                              v1: '4',
+                                                              v2: '5',
+                                                              v3: '6',
+                                                              onTap1: () {
+                                                                _addNotesOnTapFunction(
+                                                                    '4');
+                                                              },
+                                                              onTap2: () {
+                                                                _addNotesOnTapFunction(
+                                                                    '5');
+                                                              },
+                                                              onTap3: () {
+                                                                _addNotesOnTapFunction(
+                                                                    '6');
+                                                              },),
+                                                            AddNotesRowWidget(
+                                                              v1: '7',
+                                                              v2: '8',
+                                                              v3: '9',
+                                                              onTap1: () {
+                                                                _addNotesOnTapFunction(
+                                                                    '7');
+                                                              },
+                                                              onTap2: () {
+                                                                _addNotesOnTapFunction(
+                                                                    '8');
+                                                              },
+                                                              onTap3: () {
+                                                                _addNotesOnTapFunction(
+                                                                    '9');
+                                                              },),
+                                                            AddNotesRowWidget(
+                                                              v1: 'CLR',
+                                                              v2: '0',
+                                                              v3: '.',
+                                                              onTap1: () {
+                                                                textEditingController1
+                                                                    .text = '';
+                                                                textEditingController2
+                                                                    .text = '';
+                                                              },
+                                                              onTap2: () {
+                                                                _addNotesOnTapFunction(
+                                                                    '0');
+                                                              },
+                                                              onTap3: () {
+                                                                _addNotesOnTapFunction(
+                                                                    '.');
+                                                              },),
+                                                            Row(
                                                               children: [
-                                                                Column(
-                                                                  children: [
-                                                                    Container(
-                                                                        margin: const EdgeInsets
-                                                                            .only(
-                                                                          bottom:
-                                                                              10,
-                                                                        ),
-                                                                        padding: const EdgeInsets
-                                                                            .all(
-                                                                            2),
-                                                                        decoration:
-                                                                            BoxDecoration(border: Border.all(color: Colors.green)),
-                                                                        child: const Center(
-                                                                            child: Icon(
-                                                                          Icons
-                                                                              .circle,
-                                                                          color:
-                                                                              Colors.green,
-                                                                          size:
-                                                                              12,
-                                                                        ))),
-                                                                    Container(
-                                                                        padding: const EdgeInsets
-                                                                            .all(
-                                                                            2),
-                                                                        decoration: BoxDecoration(
-                                                                            color: Colors
-                                                                                .teal.shade200,
-                                                                            borderRadius: const BorderRadius.all(Radius.circular(
-                                                                                10))),
-                                                                        child: Icon(
-                                                                            Icons
-                                                                                .emoji_food_beverage_outlined,
-                                                                            size:
-                                                                                12,
-                                                                            color:
-                                                                                Colors.grey.shade600))
-                                                                  ],
+                                                                Expanded(
+                                                                  child: GestureDetector(
+                                                                    onTap: () {
+                                                                      Navigator
+                                                                          .of(
+                                                                          context)
+                                                                          .pop();
+                                                                    },
+                                                                    child: Container(
+                                                                      padding: const EdgeInsets
+                                                                          .all(
+                                                                          10),
+                                                                      decoration: BoxDecoration(
+                                                                          borderRadius: const BorderRadius
+                                                                              .all(
+                                                                              Radius
+                                                                                  .circular(
+                                                                                  5)),
+                                                                          border: Border
+                                                                              .all(
+                                                                              color: Colors
+                                                                                  .red
+                                                                          )
+                                                                      ),
+                                                                      child: const Center(
+                                                                          child: Text(
+                                                                            'CLOSE',
+                                                                            style: TextStyle(
+                                                                                color: Colors
+                                                                                    .red,
+                                                                                fontWeight: FontWeight
+                                                                                    .w600),)),
+                                                                    ),
+                                                                  ),
                                                                 ),
                                                                 const SizedBox(
-                                                                    width: 15),
+                                                                    width: 10),
                                                                 Expanded(
-                                                                    flex: 3,
-                                                                    child: Text(
-                                                                        '${provider.filteredValues[index].productName}',
-                                                                        style: TextStyle(
-                                                                            color:
-                                                                                Colors.grey.shade600,
-                                                                            fontSize: 18))),
-                                                                // Text('${provider.categoryMap[selectedCategoryType]?[index].productName}', style: TextStyle(color: Colors.grey.shade600, fontSize: 16))),
-                                                                Expanded(
-                                                                  flex: 2,
-                                                                  child: Column(
-                                                                    children: [
-                                                                      Text(
-                                                                          '$rupeeSymbol${double.parse(provider.filteredValues[index].purchasePrice ?? '0.0')}',
-                                                                          style: const TextStyle(
-                                                                              fontSize: 16,
-                                                                              fontWeight: FontWeight.w700)),
-                                                                      Row(
-                                                                        children: [
-                                                                          CartAddRemoveWidget(
-                                                                            iconData:
-                                                                                Icons.remove,
-                                                                            onTap: provider.filteredValues[index].quantity > 0
-                                                                                ? () {
-                                                                                    provider.removeFromCart(provider.filteredValues[index]);
-                                                                                  }
-                                                                                : (){},
-                                                                          ),
-                                                                          Expanded(
-                                                                              child: Text(textAlign: TextAlign.center, '${provider.filteredValues[index].initialSelectionStatus ? provider.filteredValues[index].quantity : 0}', maxLines: 1)),
-                                                                          CartAddRemoveWidget(
-                                                                            iconData:
-                                                                                Icons.add,
-                                                                            onTap:
-                                                                                () {
-                                                                                  provider.filteredValues[index].initialSelectionStatus = true;
-                                                                              provider.addToCart(provider.filteredValues[index]);
-                                                                            },
-                                                                          ),
-                                                                        ],
-                                                                      ),
-                                                                      // ElevatedButton(
-                                                                      //     style: ButtonStyle(
-                                                                      //         backgroundColor: WidgetStateProperty.all<Color?>(
-                                                                      //             appThemeColor),
-                                                                      //         foregroundColor: WidgetStateProperty.all<Color?>(Colors
-                                                                      //             .white)),
-                                                                      //     onPressed:
-                                                                      //         () {
-                                                                      //       provider.addToCart(provider.filteredValues[index]);
-                                                                      //     },
-                                                                      //     child:
-                                                                      //         const Row(
-                                                                      //       children: [
-                                                                      //         Text('Add  '),
-                                                                      //         Icon(
-                                                                      //           Icons.add,
-                                                                      //           size: 30,
-                                                                      //         )
-                                                                      //       ],
-                                                                      //     ))
-                                                                    ],
+                                                                  child: Container(
+                                                                    padding: const EdgeInsets
+                                                                        .all(
+                                                                        10),
+                                                                    decoration: BoxDecoration(
+                                                                      color: appThemeColor,
+                                                                      borderRadius: const BorderRadius
+                                                                          .all(
+                                                                          Radius
+                                                                              .circular(
+                                                                              5)),
+                                                                      // border: Border.all(
+                                                                      //     color: Colors.red
+                                                                      // )
+                                                                    ),
+                                                                    child: const Center(
+                                                                        child: Text(
+                                                                          'CONFIRM',
+                                                                          style: TextStyle(
+                                                                              color: Colors
+                                                                                  .white,
+                                                                              fontWeight: FontWeight
+                                                                                  .w600),)),
                                                                   ),
                                                                 )
                                                               ],
-                                                            ),
-                                                          ),
-                                                          const Divider()
-                                                        ],
-                                                      );
-                                                    }),
+                                                            )
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    );
+                                                  });
+                                            },
+                                            child: SizedBox(
+                                                width:
+                                                MediaQuery
+                                                    .of(context)
+                                                    .size
+                                                    .width *
+                                                    0.4,
+                                                child: Text(
+                                                    '${provider.cartList[index]
+                                                        .productName}')),
+                                          ),
+                                          Expanded(
+                                            child: Row(
+                                              children: [
+                                                Expanded(
+                                                    child: Text(
+                                                        '${double.parse(provider
+                                                            .cartList[index]
+                                                            .purchasePrice ??
+                                                            '0.0')}',
+                                                        maxLines: 1)),
+                                                SizedBox(
+                                                  width: MediaQuery
+                                                      .of(
+                                                      context)
+                                                      .size
+                                                      .width *
+                                                      0.28,
+                                                  child: Row(
+                                                    children: [
+                                                      CartAddRemoveWidget(
+                                                        iconData:
+                                                        Icons.remove,
+                                                        onTap: () {
+                                                          provider
+                                                              .removeFromCart(
+                                                              provider.cartList[
+                                                              index]);
+                                                        },
+                                                      ),
+                                                      Expanded(
+                                                          child: Text(
+                                                              textAlign:
+                                                              TextAlign
+                                                                  .center,
+                                                              '${provider
+                                                                  .cartList[index]
+                                                                  .quantity}',
+                                                              maxLines:
+                                                              1)),
+                                                      CartAddRemoveWidget(
+                                                        iconData:
+                                                        Icons.add,
+                                                        onTap: () {
+                                                          provider.addToCart(
+                                                              provider.cartList[
+                                                              index]);
+                                                        },
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                                Expanded(
+                                                    child: Text(
+                                                        '${provider
+                                                            .cartList[index]
+                                                            .quantity *
+                                                            double.parse(
+                                                                provider
+                                                                    .cartList[index]
+                                                                    .purchasePrice ??
+                                                                    '0.0')}',
+                                                        textAlign:
+                                                        TextAlign.end,
+                                                        maxLines: 1))
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    const Divider()
+                                  ],
+                                );
+                              }))
+                    ],
+                  ),
+                  Positioned(
+                    bottom: 0,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        AnimatedContainer(
+                            curve: Curves.fastOutSlowIn,
+                            duration: const Duration(milliseconds: 500),
+                            height: _animatedHeightValue,
+                            width: MediaQuery
+                                .of(context)
+                                .size
+                                .width,
+                            color: Colors.transparent,
+                            child: Stack(
+                              children: [
+                                SingleChildScrollView(
+                                  physics:
+                                  const NeverScrollableScrollPhysics(),
+                                  child: Container(
+                                    margin:
+                                    const EdgeInsets.only(top: 40),
+                                    height: (MediaQuery
+                                        .of(context)
+                                        .size
+                                        .height *
+                                        0.8),
+                                    width:
+                                    MediaQuery
+                                        .of(context)
+                                        .size
+                                        .width,
+                                    decoration: const BoxDecoration(
+                                        color: Colors.white),
+                                    child: Column(
+                                      children: [
+                                        Padding(
+                                          padding:
+                                          const EdgeInsets.symmetric(
+                                              horizontal: 10.0,
+                                              vertical: 10),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                            MainAxisAlignment.end,
+                                            children: [
+                                              Text(
+                                                vegOnlySwitchStatus
+                                                    ? 'Veg only'
+                                                    : 'Non Veg',
+                                                style: TextStyle(
+                                                    color:
+                                                    vegOnlySwitchStatus
+                                                        ? Colors.green
+                                                        : Colors.red,
+                                                    //Colors.grey.shade700,
+                                                    fontWeight:
+                                                    FontWeight.bold,
+                                                    fontSize: 18),
                                               ),
+                                              const SizedBox(
+                                                width: 20,
+                                              ),
+                                              Switch(
+                                                  activeColor:
+                                                  Colors.green,
+                                                  inactiveThumbColor:
+                                                  Colors.red,
+                                                  inactiveTrackColor:
+                                                  Colors.red.shade100,
+                                                  value:
+                                                  vegOnlySwitchStatus,
+                                                  onChanged: (s) {
+                                                    setState(() {
+                                                      vegOnlySwitchStatus =
+                                                          s;
+                                                    });
+                                                  })
                                             ],
                                           ),
                                         ),
-                                      ),
-                                      GestureDetector(
-                                        onTap: () {
-                                          _incrementDecrementAnimation(
-                                              MediaQuery.of(context)
-                                                      .size
-                                                      .height *
-                                                  0.6);
-                                        },
-                                        child: Container(
-                                          height: 40,
-                                          width: 60,
+                                        Container(
+                                          height: 65,
+                                          width: MediaQuery
+                                              .of(context)
+                                              .size
+                                              .width,
                                           margin:
-                                              const EdgeInsets.only(left: 5),
-                                          decoration: const BoxDecoration(
-                                              color: Colors.white,
-                                              borderRadius: BorderRadius.only(
-                                                  topLeft: Radius.circular(20),
-                                                  topRight:
-                                                      Radius.circular(20)),
-                                              boxShadow: [
-                                                BoxShadow(
-                                                    color: Colors.grey,
-                                                    blurRadius: 3)
-                                              ]),
-                                          child: const Center(
-                                              child: Icon(
-                                                  Icons.keyboard_arrow_down,
-                                                  size: 30)),
+                                          const EdgeInsets.fromLTRB(
+                                              15, 0, 15, 10),
+                                          padding:
+                                          const EdgeInsets.all(8),
+                                          decoration: BoxDecoration(
+                                              border: Border.all(
+                                                  color: Colors.grey),
+                                              borderRadius:
+                                              const BorderRadius.all(
+                                                  Radius.circular(
+                                                      10))),
+                                          child: Row(
+                                            children: [
+                                              Expanded(
+                                                child: Container(
+                                                  height: double.infinity,
+                                                  padding:
+                                                  const EdgeInsets
+                                                      .symmetric(
+                                                      horizontal: 10),
+                                                  decoration: BoxDecoration(
+                                                      color: appThemeColorShade200,
+                                                      borderRadius:
+                                                      const BorderRadius
+                                                          .all(
+                                                          Radius.circular(
+                                                              10))),
+                                                  child:
+                                                  DropdownButtonHideUnderline(
+                                                    child: DropdownButton(
+                                                      isExpanded: true,
+                                                      // hint: const Text('Select Waiter'),
+                                                      value:
+                                                      selectedCategoryType,
+                                                      items: provider
+                                                          .categoryList
+                                                          .map<
+                                                          DropdownMenuItem<
+                                                              String>>((String
+                                                      value) {
+                                                        return DropdownMenuItem<
+                                                            String>(
+                                                            value: value,
+                                                            child: Text(
+                                                                value,
+                                                                style: TextStyle(
+                                                                    color: Colors
+                                                                        .grey
+                                                                        .shade700)));
+                                                      }).toList(),
+                                                      onChanged: (c) {
+                                                        print('c= $c');
+                                                        selectedCategoryType =
+                                                            c ?? '';
+                                                        provider
+                                                            .changeCategoryTypeValue(
+                                                            c ?? '');
+                                                      },
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                              const SizedBox(width: 10),
+                                              Expanded(
+                                                child: TextField(
+                                                  onChanged: provider
+                                                      .filterSearchValues,
+                                                  decoration:
+                                                  const InputDecoration(
+                                                      border:
+                                                      InputBorder
+                                                          .none,
+                                                      hintText:
+                                                      'Search'),
+                                                ),
+                                              )
+                                            ],
+                                          ),
                                         ),
-                                      ),
-                                    ],
-                                  )),
-                              Container(
-                                height: 80,
-                                width: MediaQuery.of(context).size.width,
-                                color: appThemeColor,
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceAround,
-                                  children: [
-                                    ProductOverAllFieldWidget(
-                                      title: 'ITEMS',
-                                      value: '${provider.cartList.length}',
+                                        Expanded(
+                                          child: ListView.builder(
+                                              itemCount: provider
+                                                  .filteredValues.length,
+                                              // itemCount: provider.categoryMap[selectedCategoryType]?.length,
+                                              itemBuilder:
+                                                  (context, index) {
+                                                return Column(
+                                                  children: [
+                                                    Padding(
+                                                      padding:
+                                                      const EdgeInsets
+                                                          .symmetric(
+                                                          horizontal:
+                                                          10.0,
+                                                          vertical:
+                                                          5),
+                                                      child: Row(
+                                                        children: [
+                                                          Column(
+                                                            children: [
+                                                              Container(
+                                                                  margin: const EdgeInsets
+                                                                      .only(
+                                                                    bottom:
+                                                                    10,
+                                                                  ),
+                                                                  padding: const EdgeInsets
+                                                                      .all(
+                                                                      2),
+                                                                  decoration:
+                                                                  BoxDecoration(
+                                                                      border: Border
+                                                                          .all(
+                                                                          color: Colors
+                                                                              .green)),
+                                                                  child: const Center(
+                                                                      child: Icon(
+                                                                        Icons
+                                                                            .circle,
+                                                                        color:
+                                                                        Colors
+                                                                            .green,
+                                                                        size:
+                                                                        12,
+                                                                      ))),
+                                                              Container(
+                                                                  padding: const EdgeInsets
+                                                                      .all(
+                                                                      2),
+                                                                  decoration: BoxDecoration(
+                                                                      color: Colors
+                                                                          .teal
+                                                                          .shade200,
+                                                                      borderRadius: const BorderRadius
+                                                                          .all(
+                                                                          Radius
+                                                                              .circular(
+                                                                              10))),
+                                                                  child: Icon(
+                                                                      Icons
+                                                                          .emoji_food_beverage_outlined,
+                                                                      size:
+                                                                      12,
+                                                                      color:
+                                                                      Colors
+                                                                          .grey
+                                                                          .shade600))
+                                                            ],
+                                                          ),
+                                                          const SizedBox(
+                                                              width: 15),
+                                                          Expanded(
+                                                              flex: 3,
+                                                              child: Text(
+                                                                  '${provider
+                                                                      .filteredValues[index]
+                                                                      .productName}',
+                                                                  style: TextStyle(
+                                                                      color:
+                                                                      Colors
+                                                                          .grey
+                                                                          .shade600,
+                                                                      fontSize: 18))),
+                                                          // Text('${provider.categoryMap[selectedCategoryType]?[index].productName}', style: TextStyle(color: Colors.grey.shade600, fontSize: 16))),
+                                                          Expanded(
+                                                            flex: 2,
+                                                            child: Column(
+                                                              children: [
+                                                                Text(
+                                                                    '$rupeeSymbol${double
+                                                                        .parse(
+                                                                        provider
+                                                                            .filteredValues[index]
+                                                                            .purchasePrice ??
+                                                                            '0.0')}',
+                                                                    style: const TextStyle(
+                                                                        fontSize: 16,
+                                                                        fontWeight: FontWeight
+                                                                            .w700)),
+                                                                Row(
+                                                                  children: [
+                                                                    CartAddRemoveWidget(
+                                                                      iconData:
+                                                                      Icons
+                                                                          .remove,
+                                                                      onTap: provider
+                                                                          .filteredValues[index]
+                                                                          .quantity >
+                                                                          0
+                                                                          ? () {
+                                                                        provider
+                                                                            .removeFromCart(
+                                                                            provider
+                                                                                .filteredValues[index]);
+                                                                      }
+                                                                          : () {},
+                                                                    ),
+                                                                    Expanded(
+                                                                        child: Text(
+                                                                            textAlign: TextAlign
+                                                                                .center,
+                                                                            '${provider
+                                                                                .filteredValues[index]
+                                                                                .initialSelectionStatus
+                                                                                ? provider
+                                                                                .filteredValues[index]
+                                                                                .quantity
+                                                                                : 0}',
+                                                                            maxLines: 1)),
+                                                                    CartAddRemoveWidget(
+                                                                      iconData:
+                                                                      Icons.add,
+                                                                      onTap:
+                                                                          () {
+                                                                        provider
+                                                                            .filteredValues[index]
+                                                                            .initialSelectionStatus =
+                                                                        true;
+                                                                        provider
+                                                                            .addToCart(
+                                                                            provider
+                                                                                .filteredValues[index]);
+                                                                      },
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                                // ElevatedButton(
+                                                                //     style: ButtonStyle(
+                                                                //         backgroundColor: WidgetStateProperty.all<Color?>(
+                                                                //             appThemeColor),
+                                                                //         foregroundColor: WidgetStateProperty.all<Color?>(Colors
+                                                                //             .white)),
+                                                                //     onPressed:
+                                                                //         () {
+                                                                //       provider.addToCart(provider.filteredValues[index]);
+                                                                //     },
+                                                                //     child:
+                                                                //         const Row(
+                                                                //       children: [
+                                                                //         Text('Add  '),
+                                                                //         Icon(
+                                                                //           Icons.add,
+                                                                //           size: 30,
+                                                                //         )
+                                                                //       ],
+                                                                //     ))
+                                                              ],
+                                                            ),
+                                                          )
+                                                        ],
+                                                      ),
+                                                    ),
+                                                    const Divider()
+                                                  ],
+                                                );
+                                              }),
+                                        ),
+                                      ],
                                     ),
-                                    ProductOverAllFieldWidget(
-                                      title: 'QTY',
-                                      value: '${provider.overAllQuantity}',
-                                    ),
-                                    ElevatedButton(
-                                        style: ButtonStyle(
-                                            padding: WidgetStateProperty.all<
-                                                    EdgeInsetsGeometry?>(
-                                                const EdgeInsets.symmetric(
-                                                    vertical: 15,
-                                                    horizontal: 30)),
-                                            shape: WidgetStateProperty.all<
-                                                    OutlinedBorder?>(
-                                                const RoundedRectangleBorder(
-                                                    borderRadius: BorderRadius.all(
-                                                        Radius.circular(40))))),
-                                        onPressed: () async {
-                                          if (provider.cartList.isNotEmpty) {
-                                            // setState(()=>_isLoading=true);
-                                            // _postOrderKotData(cartListValues: provider.cartList, context: context);
-                                          } else {
-                                            showCustomAlertDialog(
-                                                context: context,
-                                                title: 'Add items to Order');
-                                          }
-                                        },
-                                        child: Text(
-                                          'ORDER KOT',
-                                          style: TextStyle(
-                                              color: Colors.grey.shade900,
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w700),
-                                        ))
-                                  ],
+                                  ),
                                 ),
-                              )
+                                GestureDetector(
+                                  onTap: () {
+                                    _incrementDecrementAnimation(
+                                        MediaQuery
+                                            .of(context)
+                                            .size
+                                            .height *
+                                            0.6);
+                                  },
+                                  child: Container(
+                                    height: 40,
+                                    width: 60,
+                                    margin:
+                                    const EdgeInsets.only(left: 5),
+                                    decoration: const BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.only(
+                                            topLeft: Radius.circular(20),
+                                            topRight:
+                                            Radius.circular(20)),
+                                        boxShadow: [
+                                          BoxShadow(
+                                              color: Colors.grey,
+                                              blurRadius: 3)
+                                        ]),
+                                    child: const Center(
+                                        child: Icon(
+                                            Icons.keyboard_arrow_down,
+                                            size: 30)),
+                                  ),
+                                ),
+                              ],
+                            )),
+                        Container(
+                          height: 80,
+                          width: MediaQuery
+                              .of(context)
+                              .size
+                              .width,
+                          color: appThemeColor,
+                          child: Row(
+                            mainAxisAlignment:
+                            MainAxisAlignment.spaceAround,
+                            children: [
+                              ProductOverAllFieldWidget(
+                                title: 'ITEMS',
+                                value: '${provider.cartList.length}',
+                              ),
+                              ProductOverAllFieldWidget(
+                                title: 'QTY',
+                                value: '${provider.overAllQuantity}',
+                              ),
+                              ElevatedButton(
+                                  style: ButtonStyle(
+                                      padding: WidgetStateProperty.all<
+                                          EdgeInsetsGeometry?>(
+                                          const EdgeInsets.symmetric(
+                                              vertical: 15,
+                                              horizontal: 30)),
+                                      shape: WidgetStateProperty.all<
+                                          OutlinedBorder?>(
+                                          const RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.all(
+                                                  Radius.circular(40))))),
+                                  onPressed: () async {
+                                    if (provider.cartList.isNotEmpty) {
+                                      setState(() => _isLoading = true);
+                                      _postOrderKotData(
+                                          cartListValues: provider.cartList,
+                                          context: context);
+                                    } else {
+                                      showCustomAlertDialog(
+                                          context: context,
+                                          title: 'Add items to Order');
+                                    }
+                                  },
+                                  child: Text(
+                                    'ORDER KOT',
+                                    style: TextStyle(
+                                        color: Colors.grey.shade900,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w700),
+                                  ))
                             ],
                           ),
-                        ),
-                        // kTillVal == ""
-                        //     ? Stack(
-                        //         children: [
-                        //           Container(
-                        //             height: MediaQuery.of(context).size.height,
-                        //             width: MediaQuery.of(context).size.width,
-                        //             color: Colors.black54,
-                        //           ),
-                        //           tillBaseModel != null
-                        //               ? Center(
-                        //                   child: Container(
-                        //                     height: MediaQuery.of(context)
-                        //                             .size
-                        //                             .height *
-                        //                         0.8,
-                        //                     width: MediaQuery.of(context)
-                        //                             .size
-                        //                             .width *
-                        //                         0.8,
-                        //                     padding: const EdgeInsets.all(10),
-                        //                     decoration: const BoxDecoration(
-                        //                       color: Colors.white,
-                        //                       borderRadius: BorderRadius.all(
-                        //                           Radius.circular(10)),
-                        //                     ),
-                        //                     child: Material(
-                        //                       child: Column(
-                        //                         children: [
-                        //                           Text('Select your cash register (till)', style: TextStyle(color: Colors.grey.shade700, fontWeight: FontWeight.w600)),
-                        //                           const Divider(),
-                        //                           Expanded(
-                        //                             child: GridView.builder(
-                        //                                 gridDelegate:
-                        //                                     const SliverGridDelegateWithFixedCrossAxisCount(
-                        //                                   crossAxisCount: 2,
-                        //                                   crossAxisSpacing: 10.0,
-                        //                                   mainAxisSpacing: 10.0,
-                        //                                 ),
-                        //                                 itemCount: tillBaseModel
-                        //                                         ?.data
-                        //                                         ?.length ??
-                        //                                     0,
-                        //                                 // Total number of items
-                        //                                 itemBuilder: (BuildContext context, int index) {
-                        //                                   return GestureDetector(
-                        //                                     onTap: () {
-                        //                                       kTillVal = tillBaseModel!.data![index].tillCode ??'';
-                        //                                       kEnableCashRegisterVal = tillBaseModel!.data![index].enableCashRegister ?? '';
-                        //                                       _getCashRegisterData(context);
-                        //                                       _saveInSharedPreference();
-                        //                                     },
-                        //                                     child: Container(
-                        //                                       decoration: BoxDecoration(
-                        //                                           borderRadius:
-                        //                                               const BorderRadius
-                        //                                                   .all(
-                        //                                                   Radius.circular(
-                        //                                                       10)),
-                        //                                           border: Border.all(
-                        //                                               color: Colors
-                        //                                                   .grey
-                        //                                                   .shade700,
-                        //                                               style: BorderStyle
-                        //                                                   .solid)),
-                        //                                       child: Column(
-                        //                                         mainAxisAlignment:
-                        //                                             MainAxisAlignment
-                        //                                                 .center,
-                        //                                         children: [
-                        //                                           const SizedBox(
-                        //                                               height:
-                        //                                                   80,
-                        //                                               width: 80,
-                        //                                               child: Image(
-                        //                                                   image: AssetImage(
-                        //                                                       'assets/images/till_counter_image.png'),
-                        //                                                   fit: BoxFit
-                        //                                                       .fill)),
-                        //                                           FittedBox(
-                        //                                               child: Text(
-                        //                                                   '${tillBaseModel!.data?[index].tillCode} / ${tillBaseModel!.data?[index].tillName}',
-                        //                                                   maxLines:
-                        //                                                       1,
-                        //                                                   style: TextStyle(
-                        //                                                       color: Colors.purple.shade700,
-                        //                                                       fontWeight: FontWeight.w600)))
-                        //                                         ],
-                        //                                       ),
-                        //                                     ),
-                        //                                   );
-                        //                                 }),
-                        //                           ),
-                        //                         ],
-                        //                       ),
-                        //                     ),
-                        //                   ),
-                        //                 )
-                        //               : const Center(
-                        //                   child: CircularProgressIndicator()),
-                        //         ],
-                        //       )
-                        //     : const SizedBox()
+                        )
                       ],
-                    )
+                    ),
+                  ),
+                  // kTillVal == ""
+                  //     ? Stack(
+                  //         children: [
+                  //           Container(
+                  //             height: MediaQuery.of(context).size.height,
+                  //             width: MediaQuery.of(context).size.width,
+                  //             color: Colors.black54,
+                  //           ),
+                  //           tillBaseModel != null
+                  //               ? Center(
+                  //                   child: Container(
+                  //                     height: MediaQuery.of(context)
+                  //                             .size
+                  //                             .height *
+                  //                         0.8,
+                  //                     width: MediaQuery.of(context)
+                  //                             .size
+                  //                             .width *
+                  //                         0.8,
+                  //                     padding: const EdgeInsets.all(10),
+                  //                     decoration: const BoxDecoration(
+                  //                       color: Colors.white,
+                  //                       borderRadius: BorderRadius.all(
+                  //                           Radius.circular(10)),
+                  //                     ),
+                  //                     child: Material(
+                  //                       child: Column(
+                  //                         children: [
+                  //                           Text('Select your cash register (till)', style: TextStyle(color: Colors.grey.shade700, fontWeight: FontWeight.w600)),
+                  //                           const Divider(),
+                  //                           Expanded(
+                  //                             child: GridView.builder(
+                  //                                 gridDelegate:
+                  //                                     const SliverGridDelegateWithFixedCrossAxisCount(
+                  //                                   crossAxisCount: 2,
+                  //                                   crossAxisSpacing: 10.0,
+                  //                                   mainAxisSpacing: 10.0,
+                  //                                 ),
+                  //                                 itemCount: tillBaseModel
+                  //                                         ?.data
+                  //                                         ?.length ??
+                  //                                     0,
+                  //                                 // Total number of items
+                  //                                 itemBuilder: (BuildContext context, int index) {
+                  //                                   return GestureDetector(
+                  //                                     onTap: () {
+                  //                                       kTillVal = tillBaseModel!.data![index].tillCode ??'';
+                  //                                       kEnableCashRegisterVal = tillBaseModel!.data![index].enableCashRegister ?? '';
+                  //                                       _getCashRegisterData(context);
+                  //                                       _saveInSharedPreference();
+                  //                                     },
+                  //                                     child: Container(
+                  //                                       decoration: BoxDecoration(
+                  //                                           borderRadius:
+                  //                                               const BorderRadius
+                  //                                                   .all(
+                  //                                                   Radius.circular(
+                  //                                                       10)),
+                  //                                           border: Border.all(
+                  //                                               color: Colors
+                  //                                                   .grey
+                  //                                                   .shade700,
+                  //                                               style: BorderStyle
+                  //                                                   .solid)),
+                  //                                       child: Column(
+                  //                                         mainAxisAlignment:
+                  //                                             MainAxisAlignment
+                  //                                                 .center,
+                  //                                         children: [
+                  //                                           const SizedBox(
+                  //                                               height:
+                  //                                                   80,
+                  //                                               width: 80,
+                  //                                               child: Image(
+                  //                                                   image: AssetImage(
+                  //                                                       'assets/images/till_counter_image.png'),
+                  //                                                   fit: BoxFit
+                  //                                                       .fill)),
+                  //                                           FittedBox(
+                  //                                               child: Text(
+                  //                                                   '${tillBaseModel!.data?[index].tillCode} / ${tillBaseModel!.data?[index].tillName}',
+                  //                                                   maxLines:
+                  //                                                       1,
+                  //                                                   style: TextStyle(
+                  //                                                       color: Colors.purple.shade700,
+                  //                                                       fontWeight: FontWeight.w600)))
+                  //                                         ],
+                  //                                       ),
+                  //                                     ),
+                  //                                   );
+                  //                                 }),
+                  //                           ),
+                  //                         ],
+                  //                       ),
+                  //                     ),
+                  //                   ),
+                  //                 )
+                  //               : const Center(
+                  //                   child: CircularProgressIndicator()),
+                  //         ],
+                  //       )
+                  //     : const SizedBox()
+                ],
+              )
                   : const FullScreenLoadingWidget(isLoading: true),
               FullScreenLoadingWidget(isLoading: _isLoading),
             ],
@@ -877,10 +1204,9 @@ class _NewOrderScreenState extends State<NewOrderScreen> {
 
   void _addNotesOnTapFunction(String s) {
     print('s = $s');
-    if(_focusNode1.hasFocus)
-      {
-          textEditingController1.text = '${textEditingController1.value.text}$s';
-      }else{
+    if (_focusNode1.hasFocus) {
+      textEditingController1.text = '${textEditingController1.value.text}$s';
+    } else {
       textEditingController2.text = '${textEditingController2.value.text}$s';
     }
     setState(() {});
@@ -891,6 +1217,7 @@ class AddNotesTextFieldWidget extends StatelessWidget {
   final FocusNode focusNode;
   final TextEditingController controller;
   final String? hintText;
+
   const AddNotesTextFieldWidget({super.key,
     required this.focusNode, required this.controller, this.hintText,
   });
@@ -908,6 +1235,7 @@ class AddNotesTextFieldWidget extends StatelessWidget {
       ),
     );
   }
+
   InputDecoration _addNoteFieldDecoration({String? hintText}) {
     return InputDecoration(
       hintText: hintText,
@@ -976,11 +1304,12 @@ class AddNotesKeyBordWidget extends StatelessWidget {
       child: GestureDetector(
         onTap: onTap,
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 7),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
           decoration: BoxDecoration(
               borderRadius: const BorderRadius.all(Radius.circular(5)),
               border: Border.all(color: Colors.grey)),
-          child: Center(child: Text(value,style: const TextStyle(fontSize: 16))),
+          child: Center(
+              child: Text(value, style: const TextStyle(fontSize: 16))),
         ),
       ),
     );

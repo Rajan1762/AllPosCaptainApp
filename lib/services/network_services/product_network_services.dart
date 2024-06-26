@@ -5,9 +5,25 @@ import 'package:captain_app/utils/common_functions.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
+import '../../model/order_models/new_order_model.dart';
 import '../../model/product_models/product_model.dart';
+import '../../model/product_models/response_model_new_order_kot.dart';
 import '../../utils/constants.dart';
 import '../provider_services/product_provider_service.dart';
+
+Future postOrderKotData({required NewOrderKOTModel newOrderKotModel}) async{
+  print('newOrderKotURL = $newOrderKotURL');
+  // printFull(json.encode(newOrderKotModel.toJson()));
+  printFull('json.encode(newOrderKotModel.toJson()) = ${json.encode(newOrderKotModel.toJson())}');
+  // print('json.encode(newOrderKotModel.toJson()) = ${json.encode(newOrderKotModel.toJson())}');
+  var response = await http.post(Uri.parse(newOrderKotURL),body: json.encode(newOrderKotModel.toJson()),headers: {'Content-Type': 'application/json','OID': kOrganizationCodeVal,'EID': kEmployeeCodeVal,'Authorization': 'Bearer $kAuthTokenVal'});
+  print("getProductListData status code = ${response.statusCode}\nbody = ${response.body}");
+  if(response.statusCode == 200 && response.body!="")
+  {
+      return ResponseModelNewOrderKot.fromJson(json.decode(response.body));
+  }
+  return null;
+}
 
 //TODO
 // Future postOrderKotData({required NewOrderKotModel newOrderKotModel}) async{

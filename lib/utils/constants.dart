@@ -15,7 +15,8 @@ const String updateUserURL = '$baseUrl/api/ledgers/L001';
 const String orderDetailURL = '$baseUrl/api/sale-orders/details/';
 const String cancelSingleProductUrl = '$baseUrl/api/sale-orders/cancel-product';
 const String cancelAllProductOrderURL = '$baseUrl/api/sale-orders/cancel/';
-const String newOrderKotURL = '$baseUrl/api/sale-invoices/order-invoice';
+const String newOrderKotURL = '$baseUrl/api/sale-invoices/order';
+// const String newOrderKotURL = '$baseUrl/api/sale-invoices/order-invoice';
 const String shiftNumberFetchURL = '$baseUrl/api/pos/shift-register-number/';
 const String cashRegisterNumberFetchURL = '$baseUrl/api/pos/cash-register-number/';
 
